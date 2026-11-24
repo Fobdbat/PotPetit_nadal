@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Tió de Nadal! · El joc d'El Pot Petit</title>
+<meta name="description" content="Recull els torrons, regals i caganers que caga el Tió al ritme de la cançó «Tió de Nadal» d'El Pot Petit. Joc per a infants.">
+<meta name="theme-color" content="#2E0F52">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tió de Nadal! · El joc d'El Pot Petit">
+<meta property="og:description" content="Caga Tió! Recull torrons, regals i caganers al ritme de la cançó d'El Pot Petit, esquiva les arengades i descobreix versos tradicionals del Tió.">
+<meta property="og:url" content="https://tio-pot-petit.pages.dev/">
+<meta property="og:image" content="https://tio-pot-petit.pages.dev/portada.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='18' y='26' width='40' height='26' rx='10' fill='%230E5560'/%3E%3Cellipse cx='20' cy='39' rx='12' ry='14' fill='%23F6AE94' stroke='%230F5E68' stroke-width='3'/%3E%3Cpath d='M8 30c0-16 26-22 34-6 6-2 8 4 4 8z' fill='%23EE5E5C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lila:#7A3DB8; --lila-fosc:#4A1F7E; --lila-nit:#2E0F52;
+    --taronja:#F7931E; --groc:#FFD23F; --tinta:#2B1640; --vermell:#EE5E5C; --verd:#8DC63F; --turquesa:#14A3A8;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden;background:#2E0F52;
+    font-family:"Baloo 2",system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;
+    touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  canvas{position:fixed;inset:0;display:block;touch-action:none}
+  .overlay{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;
+    padding:3vh 14px 46px;overflow:auto;z-index:5}
+  .overlay.hidden{display:none}
+  .panel{background:rgba(46,15,82,.9);border:5px solid var(--groc);border-radius:28px;
+    padding:18px 22px 22px;max-width:560px;width:100%;text-align:center;
+    box-shadow:0 10px 0 var(--lila-fosc),0 18px 40px rgba(0,0,0,.45);backdrop-filter:blur(3px)}
+  h1{margin:0;font-size:clamp(40px,9vw,64px);line-height:.95;font-weight:800;color:var(--groc);
+    text-shadow:0 4px 0 var(--taronja),0 8px 0 var(--lila-fosc);letter-spacing:.5px}
+  .sub{margin:10px 0 6px;font-size:clamp(17px,3.8vw,22px);font-weight:700;color:#FFE9C7}
+  .row{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:6px 0}
+  .row .lbl{font-weight:800;font-size:clamp(16px,3.6vw,20px);margin-right:4px}
+  .row.good .lbl{color:var(--groc)} .row.bad .lbl{color:#FF9DB0}
+  .row canvas{position:static;width:56px;height:56px;background:rgba(255,255,255,.08);border-radius:14px}
+  .how{font-size:clamp(15px,3.4vw,19px);font-weight:600;line-height:1.25;margin:10px 0 4px;color:#fff}
+  .how b{color:var(--groc)}
+  .note{font-size:clamp(14px,3.2vw,17px);font-weight:700;color:#FFE9C7;margin:8px auto 0;padding:5px 12px;
+    border-radius:14px;background:rgba(20,163,168,.35);display:inline-block}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;
+    font-family:inherit;font-weight:800;font-size:clamp(22px,5vw,30px);color:var(--tinta);
+    background:var(--groc);border-radius:999px;padding:10px 34px 8px;margin-top:12px;
+    box-shadow:0 6px 0 var(--taronja);text-decoration:none;transition:transform .08s}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--taronja)}
+  .btn[disabled]{opacity:.65;cursor:wait}
+  .btn.small{font-size:clamp(17px,3.8vw,21px);padding:8px 20px 6px;margin:12px 4px 0}
+  .btn.lila{background:var(--lila);color:#fff;box-shadow:0 6px 0 var(--lila-fosc)}
+  .stars{font-size:clamp(38px,9vw,54px);letter-spacing:6px;line-height:1;margin:4px 0}
+  .stars .on{color:var(--groc);text-shadow:0 3px 0 var(--taronja)} .stars .off{color:rgba(255,255,255,.22)}
+  .big{font-size:clamp(64px,16vw,100px);font-weight:800;line-height:.9;color:var(--groc);
+    text-shadow:0 5px 0 var(--taronja),0 10px 0 var(--lila-fosc)}
+  .word{font-size:clamp(20px,4.6vw,27px);font-weight:800;color:#FFE9C7;margin-top:6px}
+  .verses{margin:14px auto 2px;max-width:470px;text-align:left}
+  .verses h3{margin:0 0 6px;text-align:center;font-size:clamp(17px,4vw,22px);color:var(--groc);font-weight:800}
+  .verse{display:flex;gap:10px;align-items:flex-start;padding:7px 12px;border-radius:14px;margin:6px 0;
+    background:rgba(255,210,63,.16);font-weight:700;font-size:clamp(15px,3.7vw,19px);line-height:1.2}
+  .verse .ic{flex:0 0 auto}
+  .verse.locked{background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);font-weight:600}
+  .tio-msg{margin:16px auto 2px;padding:10px 16px;border-radius:18px;background:var(--turquesa);color:#fff;
+    font-weight:800;font-size:clamp(19px,4.6vw,25px);line-height:1.15;box-shadow:0 5px 0 #0B6A6E;display:inline-block}
+  .credit{margin-top:14px;font-size:14px;opacity:.75;font-weight:600}
+  .ytLink{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 18px 7px;border-radius:999px;background:var(--vermell);
+    color:#fff;text-decoration:none;font-weight:800;font-size:clamp(16px,3.8vw,19px);box-shadow:0 4px 0 #B8403F}
+  .ytLink .pl{display:inline-grid;place-items:center;width:26px;height:19px;border-radius:6px;background:#fff;color:var(--vermell);font-size:11px}
+  /* tria de cantant */
+  .whoLbl{font-weight:800;font-size:clamp(16px,3.6vw,20px);color:var(--groc);margin:10px 0 4px}
+  .whoRow{display:flex;gap:12px;justify-content:center}
+  .who{border:4px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);border-radius:20px;padding:4px 4px 0;cursor:pointer;transition:transform .08s}
+  .who canvas{position:static;width:min(120px,28vw);height:min(150px,35vw);display:block}
+  .who.on{border-color:var(--groc);background:rgba(255,210,63,.2);transform:scale(1.04)}
+  #pauseBtn{position:fixed;top:10px;right:10px;z-index:4;width:52px;height:52px;border-radius:50%;
+    border:4px solid var(--groc);background:rgba(36,9,63,.75);color:var(--groc);font-size:22px;font-weight:800;
+    display:none;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}
+  #pauseBtn.show{display:flex}
+  .err{color:#FFB4B4;font-weight:700;margin-top:8px;font-size:16px}
+  /* crèdit EMS: només text (joc infantil, sense enllaç). Centrat a la franja lila de baix
+     (y 962-1000 de 1000 → centre al 98,1 % de l'alçada). No rep tocs: passen al joc. */
+  #emsCredit{position:fixed;left:0;right:0;top:98.1%;transform:translateY(-50%);z-index:6;display:flex;justify-content:center;padding:0 12px;pointer-events:none;user-select:none}
+  #emsCredit span{display:block;font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;font-size:clamp(11px,1.45vh,16px);letter-spacing:.07em;line-height:1;
+    color:rgba(240,232,250,.82);white-space:nowrap;padding:3px 6px;text-shadow:0 1px 2px rgba(20,4,40,.9),0 0 8px rgba(20,4,40,.7)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="pauseBtn" aria-label="Pausa">❚❚</button>
+
+<div id="titleOv" class="overlay">
+  <div class="panel">
+    <h1>Tió de Nadal!</h1>
+    <div class="sub">El joc d'El Pot Petit</div>
+    <div class="whoLbl">Tria qui recull els regals:</div>
+    <div class="whoRow"><button class="who on" data-who="0" aria-label="Cantant 1"><canvas></canvas></button><button class="who" data-who="1" aria-label="Cantant 2"><canvas></canvas></button></div>
+    <div class="row good"><span class="lbl">Recull:</span><canvas data-item="torro"></canvas><canvas data-item="regal"></canvas><canvas data-item="caganer"></canvas></div>
+    <div class="row bad"><span class="lbl">Esquiva:</span><canvas data-item="arengada"></canvas></div>
+    <div class="how">👆 Toca <b>l'estació</b> d'un carril per moure't.<br>👆 Toca <b>la banda</b> per amagar-te de les arengades!</div>
+    <div class="note">🔓 Cada <span id="vStep">25</span> regals descobreixes un vers tradicional del Tió</div><br>
+    <button id="playBtn" class="btn" disabled>Carregant la cançó…</button>
+    <div id="loadErr" class="err" hidden></div>
+  </div>
+</div>
+
+<div id="pauseOv" class="overlay hidden">
+  <div class="panel">
+    <h1 style="font-size:52px">Pausa</h1>
+    <button id="resumeBtn" class="btn">▶ Continua</button><br>
+    <button id="restartBtn2" class="btn small lila">↻ Torna a començar</button>
+  </div>
+</div>
+
+<div id="endOv" class="overlay hidden">
+  <div class="panel">
+    <h1 id="endTitle" style="font-size:clamp(36px,8vw,54px)">Bon Nadal!</h1>
+    <div id="stars" class="stars"></div>
+    <div class="sub" style="margin:4px 0 0">Has recollit</div>
+    <div id="endNum" class="big">0</div>
+    <div id="endWord" class="word">regals</div>
+    <div class="verses">
+      <h3>Versos del Tió que has descobert: <span style="white-space:nowrap"><span id="vCount">0</span> de 4</span></h3>
+      <div id="verseList"></div>
+    </div>
+    <div class="tio-msg">🪵 I ara, a cuidar el Tió de casa! ⭐</div>
+    <div>
+      <button id="againBtn" class="btn small">↻ Torna a jugar</button>
+    </div>
+    <div><a class="ytLink" id="ytLink" href="https://www.youtube.com/watch?v=3jzxDVCv8lA" target="_blank" rel="noopener"><span class="pl">▶</span>Escolta la cançó a YouTube</a></div>
+    <div class="credit">«Tió de Nadal» · El Pot Petit</div>
+  </div>
+</div>
+
+<div id="emsCredit"><span>© EMS – WWW.EUROPEMULTIMEDIASERVICE.COM</span></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   TIÓ DE NADAL! — joc musical per a El Pot Petit
+   Temps de la cançó (mesurats sobre l'MP3): 126 BPM · temps 0 a 0,288 s
+   Introducció suau fins al temps 27 · secció A 33-88 · pujada 89-99
+   Tornada 100-133 · aturada 134-137 · 138-177 · baixada 178-183
+   Tornada 184-216 · aturada 217-221 · final 222-279 · s'acaba al temps 286
+   ===================================================================== */
+const SONG_URL   = 'tio-de-nadal-pot-petit.mp3';
+const BEAT0      = 0.2881;    // s: posició del temps 0
+const BEAT       = 0.47616;   // s per temps (126,0 BPM)
+const FALL_BEATS = 5;         // temps que triga a caure un objecte (des que el Tió el caga)
+const FIRST_LAND = 36;        // primer objecte que aterra
+const LAST_LAND  = 279;       // últim objecte que aterra
+const END_BEAT   = 286;       // pantalla final (quan s'apaga la música)
+const HIT_FROM   = 28;        // el Tió comença a botar (compte enrere abans del primer objecte)
+const VERSE_STEP = 25;        // un vers tradicional cada 25 regals
+// Lletra: pendent que el client l'enviï. Format: [temps d'inici, temps final, text]
+/* Lletra sincronitzada amb la veu (temps d'inici i final de cada vers, en temps de 126 BPM).
+   Trobada amb la veu separada de la mescla + reconeixement de veu, i repassada a mà. */
+const LYRIC_LINES = [
+  [32.8, 39.8, 'Em busquen per un bosc'],
+  [39.8, 46.9, 'abans que es faci fosc.'],
+  [46.9, 53.6, 'Em posen barretina'],
+  [53.6, 61.3, 'i em pinten un somriure.'],
+  [61.3, 68.0, 'Primer tothom m\u2019estima,'],
+  [68.0, 76.2, 'm\u2019alimenta i m\u2019acaricia.'],
+  [76.2, 83.3, 'Em tapen amb la manta'],
+  [83.3, 94.0, 'i això a mi m\u2019encanta.'],
+  [99.3, 103.3, 'Però arriba un bon dia'],
+  [103.3, 107.2, 'i reunits amb la família,'],
+  [107.2, 111.0, 'em canten la cançó'],
+  [111.0, 115.2, 'i a les mans tenen bastons.'],
+  [115.2, 119.2, 'Però arriba un bon dia'],
+  [119.2, 123.1, 'i reunits amb la família,'],
+  [123.1, 127.0, 'em canten la cançó'],
+  [127.0, 135.5, 'i a les mans tenen bastons.'],
+  [137.2, 145.0, 'Tió, tió, tió de Nadal,'],
+  [145.0, 148.9, 'posarem el porc en sal,'],
+  [148.9, 153.1, 'la gallina a la pastera,'],
+  [153.1, 157.1, 'el pollí a dalt del pi,'],
+  [157.1, 161.2, 'toca, toca Valentí.'],
+  [161.2, 169.3, 'Tió, tió, tió de Nadal,'],
+  [169.3, 179.0, 'caga, caga, caga un bon regal!'],
+  [183.2, 187.1, 'Cada any jo per Nadal'],
+  [187.1, 190.9, 'us cago algun regal,'],
+  [190.9, 194.9, 'a vegades és carbó,'],
+  [194.9, 199.0, 'entre cares d\u2019il·lusió.'],
+  [199.0, 202.9, 'I quan jo cagui l\u2019ou,'],
+  [202.9, 207.0, 'sabreu que ja n\u2019hi ha prou.'],
+  [207.0, 210.9, 'Ens veurem l\u2019any que ve,'],
+  [210.9, 218.5, 'content vindré.'],
+  [221.1, 229.1, 'Tió, tió, tió de Nadal,'],
+  [229.1, 232.8, 'posarem el porc en sal,'],
+  [232.8, 236.9, 'la gallina a la pastera,'],
+  [236.9, 240.5, 'el pollí a dalt del pi,'],
+  [240.5, 245.1, 'toca, toca Valentí.'],
+  [245.1, 253.2, 'Tió, tió, tió de Nadal,'],
+  [253.2, 261.2, 'caga, caga, caga un bon regal!'],
+  [261.2, 269.2, 'caga, caga, caga un bon regal!'],
+  [269.2, 283.5, 'caga, caga, caga un bon regal!'],
+];
+const TRAD = [
+  'Tronc de Nadal, caga torrons, pixa vi blanc!',
+  'Caga torró d\'aquell tan bo!',
+  'Tió, tió, bona brasa i bon foc!',
+  'Si no vols cagar, cop de bastó!'
+];
+const bt = i => BEAT0 + i * BEAT;
+
+const COL = {
+  lila:'#7A3DB8', lilaFosc:'#4A1F7E', lilaNit:'#2E0F52', lilaClar:'#B48CE0',
+  taronja:'#F7931E', taronjaFosc:'#C96A0A', groc:'#FFD23F', grocPal:'#FFF0A8', verd:'#8DC63F', verdFosc:'#5E9A1E',
+  turquesa:'#14A3A8', turquesaFosc:'#0E5560', crema:'#F3EEE8',
+  tinta:'#2B1640', pell:'#F7CDB0', pellOmbra:'#E3A88A', rosa:'#F06FA8', blanc:'#FFFFFF',
+  vermell:'#EE5E5C', vermellFosc:'#C94448', negre:'#231215'
+};
+const GOOD = ['torro','regal','caganer'];
+const BAD  = ['arengada'];
+const GIFT_COL = [['#F7931E','#7A3DB8'], ['#7A3DB8','#FFD23F'], ['#8DC63F','#F7931E'], ['#14A3A8','#FFFFFF'], ['#EE5E5C','#FFD23F']];
+
+/* ---------- números en català ---------- */
+const UNI = ['zero','un','dos','tres','quatre','cinc','sis','set','vuit','nou','deu','onze','dotze','tretze','catorze','quinze','setze','disset','divuit','dinou'];
+const DES = {2:'vint',3:'trenta',4:'quaranta',5:'cinquanta',6:'seixanta',7:'setanta',8:'vuitanta',9:'noranta'};
+function num2ca(n){
+  if(n < 20) return UNI[n];
+  if(n < 100){ const d = Math.floor(n/10), u = n%10; if(!u) return DES[d]; return d === 2 ? 'vint-i-' + UNI[u] : DES[d] + '-' + UNI[u]; }
+  if(n < 1000){ const c = Math.floor(n/100), r = n%100; const cs = c === 1 ? 'cent' : UNI[c] + '-cents'; return r ? cs + ' ' + num2ca(r) : cs; }
+  return String(n);
+}
+const regalsTxt = n => n === 1 ? 'un regal' : num2ca(n) + ' regals';
+
+/* ---------- utilitats ---------- */
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const lerp = (a,b,k) => a + (b-a)*k;
+const easeOut = k => 1 - Math.pow(1-k, 3);
+const easeIn = k => k*k*k;
+const easeInOut = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k+2, 3)/2;
+function mulberry(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- canvas ---------- */
+const cv = document.getElementById('c');
+const mainCtx = cv.getContext('2d');
+let ctx = mainCtx;   // les funcions de dibuix fan servir "ctx"; el fons el redirigeix temporalment
+let W = 0, H = 0, DPR = 1, LW = 1000, S = 1;
+const L = {};
+let bgCanvas = null;
+
+function rr(x,y,w,h,r){
+  r = Math.min(r, w/2, h/2);
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function frr(x,y,w,h,r,c){ if(c) ctx.fillStyle = c; rr(x,y,w,h,r); ctx.fill(); }
+function circ(x,y,r,c){ if(c) ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
+function ell(x,y,rx,ry,c,rot){ if(c) ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(x,y,rx,ry,rot||0,0,Math.PI*2); ctx.fill(); }
+function line(x1,y1,x2,y2){ ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
+function font(sz, w){ return (w||800) + ' ' + sz + 'px "Baloo 2", system-ui, sans-serif'; }
+function star(b, x, y, r1, r2){
+  b.beginPath();
+  for(let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5; const r = i%2 ? r2 : r1; b.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r); }
+  b.closePath(); b.fill();
+}
+
+function resize(){
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  S = H / 1000; LW = 1000 * W / H;
+  const portrait = LW < 700;
+  L.portrait  = portrait;
+  L.cx        = LW / 2;
+  L.sign      = portrait ? {x:8,y:8,w:150,h:112} : {x:12,y:10,w:178,h:130};
+  // el Tió ocupa de TIO_TOP a TIO_BOT (unitats pròpies); es centra a la pantalla
+  L.tioSc     = portrait ? Math.min(.7, (LW - 30) / 400) : .9;
+  L.tioX      = LW/2 - TIO_CX * L.tioSc;
+  L.tioY      = (portrait ? 106 : 12) - TIO_TOP * L.tioSc;
+  L.pillY     = Math.round(L.tioY + TIO_BOT * L.tioSc + 28);
+  L.laneTop   = L.pillY + 36;
+  L.stationY  = portrait ? 664 : 652;
+  L.wallBottom= portrait ? 690 : 684;
+  L.floorTop  = portrait ? 708 : 700;
+  L.feetY     = portrait ? 936 : 928;
+  L.stripTop  = 962;
+  L.laneSp    = Math.min(152, (LW - 24) / 3);
+  L.laneW     = L.laneSp * .76;
+  L.plH      = portrait ? clamp(L.laneSp * 1.15, 140, 175) : 200;   // alçada del cantant que juga
+  L.itemSc    = clamp(L.laneSp / 116, .95, 1.25);
+  L.band      = portrait ? BAND_PORTRAIT : BAND_WIDE;
+  L.bandW     = portrait ? LW - 40 : Math.min(LW - 60, 920);
+  L.slotW     = L.bandW / L.band.length;
+  L.musH      = Math.min(portrait ? 210 : 262, L.slotW * 2.15);
+  L.decoOff   = portrait ? LW/2 - 26 : clamp(LW * .38, 340, 600);
+  L.decoSc    = portrait ? .72 : 1;
+  buildBackground();
+}
+const laneX  = i => L.cx + (i - 1) * L.laneSp;
+const slotX  = i => L.cx + (i - (L.band.length - 1) / 2) * L.slotW;
+const homeSlot = () => L.band.indexOf('HOME');
+const catchY = () => L.stationY - L.plH * 0.47;
+const tioPt  = (px, py) => [L.tioX + px * L.tioSc, L.tioY + py * L.tioSc];   // punt del Tió en coordenades de pantalla
+
+/* =====================================================================
+   FONS: escenari d'El Pot Petit (lila, garlandes d'estrelles, núvol crema)
+   ===================================================================== */
+function creditHalfUnits(){ const el = document.querySelector('#emsCredit span'); if(!el) return 0; const w = el.getBoundingClientRect().width; return w ? w/2/S + 10 : 0; }
+function buildBackground(){
+  L.creditHalf = creditHalfUnits();
+  bgCanvas = document.createElement('canvas');
+  bgCanvas.width = cv.width; bgCanvas.height = cv.height;
+  const b = bgCanvas.getContext('2d');
+  ctx = b;
+  try {
+    b.setTransform(S*DPR,0,0,S*DPR,0,0);
+    drawSky(b);
+    drawGarlands(b);
+    drawTree(b, L.cx - L.decoOff, L.wallBottom);
+    drawGifts(b, L.cx + L.decoOff, L.wallBottom);
+    drawCloudFloor(b);
+    drawStarSwag(b);
+    drawStrip(b);
+  } finally { ctx = mainCtx; }
+}
+const STAR_COLS = ['#FFD23F', '#F7931E', '#8DC63F', '#B48CE0'];
+function drawSky(b){
+  const g = b.createLinearGradient(0, 0, 0, L.wallBottom);
+  g.addColorStop(0, '#2E0F52'); g.addColorStop(.55, '#4A1F7E'); g.addColorStop(1, '#6A35A6');
+  b.fillStyle = g; b.fillRect(0, 0, LW, L.wallBottom + 30);
+  // llum suau al centre (on hi ha el Tió)
+  const lg = b.createRadialGradient(L.cx, 220, 20, L.cx, 220, Math.max(LW, 700) * .55);
+  lg.addColorStop(0, 'rgba(255,214,150,.22)'); lg.addColorStop(1, 'rgba(255,214,150,0)');
+  b.fillStyle = lg; b.fillRect(0, 0, LW, L.wallBottom);
+  // estrelletes i punts de colors
+  const R = mulberry(11);
+  for(let i = 0; i < LW * .06; i++){
+    const x = R() * LW, y = 40 + R() * (L.wallBottom - 80), r = 4 + R() * 6;
+    b.globalAlpha = .35 + R() * .35; b.fillStyle = STAR_COLS[i % 4];
+    if(i % 3) star(b, x, y, r, r * .45); else { b.beginPath(); b.arc(x, y, r * .35, 0, Math.PI*2); b.fill(); }
+  }
+  b.globalAlpha = 1;
+}
+// garlandes verticals d'estrelles daurades (com al plató dels vídeos)
+function drawGarlands(b){
+  const R = mulberry(23);
+  const step = L.portrait ? 74 : 96;
+  for(let x = 26; x < LW; x += step){
+    if(Math.abs(x - L.cx) < (L.portrait ? 150 : 250)) continue;   // el centre queda net per als carrils
+    const len = 200 + R() * (L.wallBottom - 330);
+    b.strokeStyle = 'rgba(255,230,160,.35)'; b.lineWidth = 1.5; line(x, 0, x, len);
+    for(let y = 24 + R() * 20; y < len; y += 34 + R() * 10){
+      b.fillStyle = R() < .7 ? '#E8B83A' : STAR_COLS[Math.floor(R() * 4)];
+      b.save(); b.translate(x, y); b.rotate((R() - .5) * .8); star(b, 0, 0, 11, 4.6); b.restore();
+    }
+  }
+}
+function drawTree(b, cx, base){
+  b.save(); b.translate(cx, base); b.scale(1.15 * L.decoSc, 1.15 * L.decoSc);
+  frr(-14, -40, 28, 40, 4, '#7A4320');
+  frr(-34, -16, 68, 22, 6, COL.taronja);
+  const tiers = [[-40, -210, 96], [-120, -280, 78], [-190, -340, 56]];
+  for(const [bot, top, w] of tiers){
+    b.fillStyle = COL.verd; b.beginPath(); b.moveTo(0, top); b.quadraticCurveTo(w * .5, (top + bot)/2, w, bot);
+    b.quadraticCurveTo(0, bot + 16, -w, bot); b.quadraticCurveTo(-w * .5, (top + bot)/2, 0, top); b.fill();
+    b.fillStyle = COL.verdFosc; b.globalAlpha = .35; b.beginPath(); b.moveTo(0, top); b.quadraticCurveTo(w * .5, (top + bot)/2, w, bot); b.quadraticCurveTo(w * .4, bot + 10, 0, bot + 8); b.closePath(); b.fill(); b.globalAlpha = 1;
+  }
+  const balls = [[-40, -60, COL.taronja], [30, -80, COL.lila], [-20, -150, COL.vermell], [36, -160, COL.groc], [-10, -230, COL.lila], [22, -250, COL.taronja], [-52, -120, COL.groc], [60, -54, COL.turquesa]];
+  for(const [x, y, c] of balls){ circ(x, y, 9, c); b.fillStyle = 'rgba(255,255,255,.5)'; circ(x - 3, y - 3, 3); }
+  b.fillStyle = COL.groc; star(b, 0, -350, 26, 11);
+  b.restore();
+}
+function drawGifts(b, cx, base){
+  b.save(); b.translate(cx, base); b.scale(L.decoSc, L.decoSc);
+  const boxes = [[-70, -70, 90, 70, COL.lila, COL.groc], [24, -96, 80, 96, COL.taronja, COL.lila], [-34, -134, 64, 64, COL.verd, COL.taronja], [-10, -48, 60, 48, COL.turquesa, '#fff']];
+  for(const [x, y, w, h, c, r] of boxes){
+    frr(x, y, w, h, 6, c); b.fillStyle = 'rgba(0,0,0,.12)'; b.fillRect(x + w*.7, y, w*.3, h);
+    b.fillStyle = r; b.fillRect(x + w/2 - 5, y, 10, h); b.fillRect(x, y + h*.35, w, 9);
+    b.beginPath(); b.ellipse(x + w/2 - 10, y - 6, 11, 7, -.5, 0, Math.PI*2); b.ellipse(x + w/2 + 10, y - 6, 11, 7, .5, 0, Math.PI*2); b.fill();
+  }
+  b.restore();
+}
+// núvol crema (com a les làmines d'El Pot Petit) que fa de terra de l'escenari
+function drawCloudFloor(b){
+  const top = L.floorTop - 22;
+  b.fillStyle = COL.crema;
+  b.beginPath(); b.moveTo(0, L.stripTop); b.lineTo(0, top + 30);
+  const R = mulberry(5); let x = 0;
+  while(x < LW + 60){ const w = 90 + R() * 80, h = 26 + R() * 28; b.quadraticCurveTo(x + w/2, top - h, x + w, top + 18); x += w; }
+  b.lineTo(LW, L.stripTop); b.closePath(); b.fill();
+  b.fillStyle = 'rgba(122,61,184,.08)'; b.fillRect(0, L.feetY - 6, LW, L.stripTop - L.feetY + 6);
+  // estrelletes de colors sobre el núvol
+  const R2 = mulberry(9);
+  for(let i = 0; i < LW * .02; i++){ b.fillStyle = STAR_COLS[i % 4]; b.globalAlpha = .7; star(b, R2() * LW, top + 40 + R2() * (L.stripTop - top - 60), 7, 3); }
+  b.globalAlpha = 1;
+}
+// garlanda d'estrelles que penja de dalt (en lloc de banderetes)
+function drawStarSwag(b){
+  const sag = 46, y0 = -6;
+  const pts = [];
+  const n = Math.max(3, Math.round(LW / 320));
+  for(let k = 0; k < n; k++){
+    const x0 = k * LW / n, x1 = (k + 1) * LW / n;
+    b.strokeStyle = 'rgba(255,230,160,.55)'; b.lineWidth = 2; b.beginPath(); b.moveTo(x0, y0); b.quadraticCurveTo((x0 + x1)/2, y0 + sag*2, x1, y0); b.stroke();
+    for(let i = 1; i < 7; i++){ const t = i / 7, x = x0 + (x1 - x0) * t, y = y0 + sag * 4 * t * (1 - t); pts.push([x, y, i + k]); }
+  }
+  for(const [x, y, i] of pts){ b.fillStyle = STAR_COLS[i % 4]; star(b, x, y + 8, 12, 5.2); }
+}
+function drawStrip(b){
+  b.fillStyle = COL.lilaFosc; b.fillRect(0, L.stripTop, LW, 1000 - L.stripTop);
+  b.fillStyle = 'rgba(255,255,255,.10)'; b.fillRect(0, L.stripTop, LW, 3);
+  b.fillStyle = COL.groc;
+  const half = L.creditHalf || 0;
+  for(const x of [56, LW - 56]){
+    if(Math.abs(x - LW/2) < half + 14) continue;
+    star(b, x, (L.stripTop + 1000)/2, 11, 4.8);
+  }
+}
+
+
+/* =====================================================================
+   PERSONATGES D'EL POT PETIT (unitats: alçada 200, peus a y=0, cap a y=-172)
+   Els dos cantants (un juga amb la cistella, l'altre canta amb la banda)
+   i els músics de la Melmelada Band.
+   ===================================================================== */
+const SINGERS = [
+  { id:'ell',  hair:'slick', hairCol:'#33261F', brow:'#33261F', top:'jacket', jacket:'#F7931E', panel:'#8DC63F', hood:'#7A3DB8', strings:'#C9EE7A', pants:'#5B2A86', shoes:'#2B1640' },
+  { id:'ella', hair:'braid', hairCol:'#B8703F', brow:'#8A4E2A', top:'dress', dress:'#7A3DB8', dressDark:'#5E2A94', warmers:'#9BD43A', shoes:'#5B2A86', lips:'#D9343F' }
+];
+const MEL = {
+  bateria:  { hair:'curly', hairCol:'#6B3FA0', shirt:'#8E4CC4', stars:'#FFD23F', pants:'#F7931E', shoes:'#5B2A86', eyes:'laugh', mouth:'laugh', suspenders:'#8DC63F', inst:'drum' },
+  baix:     { hair:'curly', hairCol:'#3A2416', beard:'full', beardCol:'#3A2416', shirt:'#8E4CC4', stars:'#FFD23F', pants:'#7BB23A', shoes:'#F7931E', eyes:'open', mouth:'smile', inst:'bass' },
+  saxo:     { hair:'quiff', hairCol:'#F2C230', shirt:'#8E4CC4', stars:'#F7931E', pants:'#7BB23A', shoes:'#5B2A86', eyes:'laugh', mouth:'none', inst:'sax' },
+  trompeta: { hair:'longCurly', hairCol:'#3A2030', shirt:'#8E4CC4', stars:'#FFD23F', pants:'#F7931E', shoes:'#5B2A86', eyes:'laugh', mouth:'none', inst:'trumpet', lips:'#C9344A' },
+  trombo:   { hair:'cap', hairCol:'#4A3426', cap:'#7BB23A', beard:'full', beardCol:'#4A3426', shirt:'#8E4CC4', stars:'#FFD23F', pants:'#7BB23A', shoes:'#5B2A86', eyes:'laugh', mouth:'none', inst:'trombone' }
+};
+// ordre a l'escenari: HOME = on s'amaga qui juga · OTHER = l'altre cantant
+const BAND_PORTRAIT = ['bateria', 'baix', 'HOME', 'OTHER', 'saxo'];
+const BAND_WIDE     = ['trombo', 'bateria', 'baix', 'HOME', 'OTHER', 'saxo', 'trompeta'];
+let PLAYER = 0;   // 0 o 1: quin cantant recull els regals
+
+/* ---- peces del cos ---- */
+function shoes(col){
+  ell(-16, -6, 14, 7, col); ell(16, -6, 14, 7, col);
+  ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(-29, -3, 26, 3); ctx.fillRect(3, -3, 26, 3);
+}
+function pants(col){
+  frr(-30, -94, 28, 86, 7, col); frr(2, -94, 28, 86, 7, col);
+  ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(-4, -90, 8, 70);
+}
+function shirtStars(col, sc){
+  frr(-32, -140, 64, 62, 14, col);
+  frr(-45, -138, 22, 26, 9, col); frr(23, -138, 22, 26, 9, col);
+  ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.beginPath(); ctx.moveTo(-12, -140); ctx.lineTo(0, -124); ctx.lineTo(12, -140); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = sc; for(const [x, y, r] of [[-18, -118, 9], [16, -104, 7], [-6, -92, 6], [22, -130, 5]]) star(ctx, x, y, r, r*.45);
+}
+function head(){
+  ctx.fillStyle = COL.pell; ctx.fillRect(-8, -148, 16, 16);
+  circ(-33, -170, 7.5, COL.pell); circ(33, -170, 7.5, COL.pell);
+  circ(0, -172, 34, COL.pell);
+}
+function beardShape(col){
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.moveTo(-34, -178); ctx.quadraticCurveTo(-37, -138, 0, -130); ctx.quadraticCurveTo(37, -138, 34, -178);
+  ctx.lineTo(27, -176); ctx.quadraticCurveTo(25, -153, 0, -150); ctx.quadraticCurveTo(-25, -153, -27, -176); ctx.closePath(); ctx.fill();
+  ell(-8, -160, 10, 4.5, col); ell(8, -160, 10, 4.5, col);
+}
+function face(o){
+  const ey = -175;
+  ctx.fillStyle = 'rgba(255,105,105,.30)'; circ(-21, -160, 6.5); circ(21, -160, 6.5);
+  ctx.strokeStyle = COL.tinta; ctx.fillStyle = COL.tinta; ctx.lineWidth = 3.4; ctx.lineCap = 'round';
+  if(o.eyes === 'laugh'){
+    ctx.beginPath(); ctx.arc(-12, ey + 3, 5.5, Math.PI*1.15, Math.PI*1.85); ctx.stroke();
+    ctx.beginPath(); ctx.arc(12, ey + 3, 5.5, Math.PI*1.15, Math.PI*1.85); ctx.stroke();
+  } else if(o.eyes === 'scared'){
+    circ(-12, ey, 6.5, '#fff'); circ(12, ey, 6.5, '#fff'); circ(-12, ey, 3, COL.tinta); circ(12, ey, 3, COL.tinta);
+  } else {
+    ell(-12, ey, 3.6, 4.6, COL.tinta); ell(12, ey, 3.6, 4.6, COL.tinta); circ(-11, ey - 2, 1.3, '#fff'); circ(13, ey - 2, 1.3, '#fff');
+  }
+  if(o.glasses){
+    ctx.strokeStyle = '#141018'; ctx.lineWidth = 3.8;
+    rr(-25, ey - 9, 21, 17, 5); ctx.stroke(); rr(4, ey - 9, 21, 17, 5); ctx.stroke(); line(-4, ey - 3, 4, ey - 3);
+  }
+  ctx.strokeStyle = o.browCol || '#3A2416'; ctx.lineWidth = 3;
+  line(-20, ey - 14, -8, ey - 16); line(8, ey - 16, 20, ey - 14);
+  const my = -156, lip = o.lips || '#7A1F2B';
+  if(o.mouth === 'laugh' || o.mouth === 'big'){
+    const w = o.mouth === 'big' ? 13 : 11, h = o.mouth === 'big' ? 13 : 10;
+    ctx.fillStyle = '#7A1F2B'; ctx.beginPath(); ctx.moveTo(-w, my); ctx.quadraticCurveTo(0, my + h*2, w, my); ctx.closePath(); ctx.fill();
+    if(o.lips){ ctx.strokeStyle = lip; ctx.lineWidth = 2.6; ctx.stroke(); }
+    ctx.fillStyle = '#fff'; ctx.fillRect(-w + 3, my, 2*w - 6, 3.2);
+    ctx.fillStyle = '#FF7C8C'; ell(0, my + h*.8, w*.45, h*.28);
+  } else if(o.mouth === 'o'){
+    ell(0, my + 3, 6, 7.5, '#7A1F2B'); if(o.lips){ ctx.strokeStyle = lip; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.ellipse(0, my + 3, 6, 7.5, 0, 0, Math.PI*2); ctx.stroke(); }
+  } else if(o.mouth === 'none'){
+    // bufant l'instrument: galtes inflades
+    ctx.fillStyle = 'rgba(255,140,120,.35)'; circ(-14, -158, 8); circ(14, -158, 8);
+  } else {
+    ctx.strokeStyle = o.lips || '#7A1F2B'; ctx.lineWidth = 3.4; ctx.beginPath(); ctx.arc(0, my - 5, 10, Math.PI*.2, Math.PI*.8); ctx.stroke();
+  }
+}
+function hair(kind, col, front){
+  ctx.fillStyle = col;
+  if(kind === 'curly'){
+    const pts = [[-30,-188,13],[-17,-201,14],[-1,-207,14],[15,-203,14],[28,-192,13],[37,-178,10],[-37,-179,10],[-38,-165,8],[38,-164,8],[-9,-197,12],[9,-199,12],[22,-205,9],[-25,-204,9]];
+    pts.forEach(p => circ(p[0], p[1], p[2]));
+    ctx.fillStyle = 'rgba(255,255,255,.13)'; pts.forEach(p => circ(p[0] - 3, p[1] - 4, p[2]*.38));
+  } else if(kind === 'slick'){
+    // cabell fosc pentinat cap enrere, amb una cueta al clatell
+    if(!front){ ell(30, -196, 10, 8, col, .5); ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(34, -192); ctx.quadraticCurveTo(48, -180, 42, -158); ctx.quadraticCurveTo(38, -176, 30, -186); ctx.fill(); return; }
+    ctx.beginPath(); ctx.moveTo(-34, -170); ctx.quadraticCurveTo(-38, -210, 0, -211); ctx.quadraticCurveTo(38, -210, 34, -170);
+    ctx.quadraticCurveTo(30, -192, 14, -196); ctx.quadraticCurveTo(-6, -200, -22, -193); ctx.quadraticCurveTo(-31, -186, -34, -170); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 2;
+    for(const dx of [-14, 0, 14]){ ctx.beginPath(); ctx.moveTo(dx - 4, -198); ctx.quadraticCurveTo(dx, -206, dx + 8, -207); ctx.stroke(); }
+  } else if(kind === 'braid'){
+    // cabell castany clar amb clenxa i una trena que cau per davant de l'espatlla
+    if(!front){ ctx.beginPath(); ctx.moveTo(-37, -176); ctx.quadraticCurveTo(-44, -140, -36, -122); ctx.lineTo(36, -122); ctx.quadraticCurveTo(44, -140, 37, -176); ctx.closePath(); ctx.fill(); return; }
+    ctx.beginPath(); ctx.moveTo(-36, -164); ctx.quadraticCurveTo(-40, -211, -2, -211); ctx.quadraticCurveTo(38, -211, 36, -164);
+    ctx.quadraticCurveTo(30, -188, 8, -194); ctx.quadraticCurveTo(-8, -192, -14, -186); ctx.quadraticCurveTo(-24, -190, -36, -164); ctx.fill();
+    for(let k = 0; k < 6; k++){ const x = 28 + k*1.2, y = -150 + k*11; ell(x, y, 8 - k*.4, 7, col); ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(x, y, 8 - k*.4, 7, 0, 0, Math.PI*2); ctx.stroke(); }
+    ell(34, -86, 5, 3, '#9BD43A');
+  } else if(kind === 'quiff'){
+    ctx.beginPath(); ctx.moveTo(-34, -170); ctx.quadraticCurveTo(-38, -206, -6, -214); ctx.quadraticCurveTo(28, -230, 40, -206);
+    ctx.quadraticCurveTo(38, -188, 34, -170); ctx.quadraticCurveTo(30, -192, 10, -194); ctx.quadraticCurveTo(-20, -196, -34, -170); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.3)'; ell(6, -212, 12, 5, null, -.3);
+  } else if(kind === 'longCurly'){
+    if(!front){ const pts = [[-40,-150,13],[-42,-128,12],[40,-150,13],[42,-128,12],[-36,-112,10],[36,-112,10]]; pts.forEach(p => circ(p[0], p[1], p[2])); return; }
+    const pts = [[-30,-190,13],[-15,-203,14],[2,-208,14],[18,-202,13],[30,-190,12],[-38,-172,11],[38,-172,11]];
+    pts.forEach(p => circ(p[0], p[1], p[2]));
+    ctx.fillStyle = 'rgba(255,255,255,.12)'; pts.forEach(p => circ(p[0] - 3, p[1] - 4, p[2]*.38));
+  } else if(kind === 'cap'){
+    ctx.beginPath(); ctx.moveTo(-36, -176); ctx.quadraticCurveTo(-38, -168, -34, -160); ctx.lineTo(-30, -176); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(36, -176); ctx.quadraticCurveTo(38, -168, 34, -160); ctx.lineTo(30, -176); ctx.fill();
+  }
+}
+function capHat(col){
+  ctx.fillStyle = col;
+  ctx.beginPath(); ctx.moveTo(-36, -184); ctx.quadraticCurveTo(-36, -216, 0, -216); ctx.quadraticCurveTo(36, -216, 36, -184); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.fillRect(-36, -188, 72, 5);
+  ell(-26, -184, 26, 7, col, -.1);
+  circ(0, -216, 4, 'rgba(0,0,0,.25)');
+}
+function arm(sx, sy, hx, hy, bend, sleeveCol, warmer){
+  const mx = (sx + hx)/2, my = (sy + hy)/2, dx = hx - sx, dy = hy - sy, len = Math.hypot(dx, dy) || 1;
+  const ex = mx + (-dy/len)*bend, ey = my + (dx/len)*bend;
+  ctx.strokeStyle = COL.pell; ctx.lineWidth = 11; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(ex, ey, hx, hy); ctx.stroke();
+  if(warmer){   // maniguets verds (la cantant)
+    ctx.strokeStyle = warmer; ctx.lineWidth = 13;
+    ctx.beginPath(); ctx.moveTo(lerp(ex, hx, .1), lerp(ey, hy, .1)); ctx.lineTo(lerp(ex, hx, .82), lerp(ey, hy, .82)); ctx.stroke();
+  }
+  if(sleeveCol) circ(sx, sy, 9, sleeveCol);
+  circ(hx, hy, 7.5, COL.pell);
+}
+function rotPt(px, py, a, tx, ty){ const c = Math.cos(a), s = Math.sin(a); return [tx + px*c - py*s, ty + px*s + py*c]; }
+
+/* ---- instruments ---- */
+function drum(liftL, liftR){
+  ctx.strokeStyle = '#9C9CA8'; ctx.lineWidth = 3; line(-24, -20, -30, 0); line(24, -20, 30, 0); line(0, -20, 0, 0);
+  const top = -64;
+  frr(-31, top, 62, 40, 6, COL.groc);
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(-31, top + 6, 62, 6);
+  ctx.fillStyle = COL.taronja; ctx.fillRect(-32, top - 1, 64, 6); ctx.fillRect(-32, top + 34, 64, 6);
+  ctx.strokeStyle = 'rgba(200,120,20,.7)'; ctx.lineWidth = 2; for(let i = 0; i < 4; i++){ line(-28 + i*18, top + 6, -19 + i*18, top + 34); line(-19 + i*18, top + 6, -10 + i*18, top + 34); }
+  ell(0, top, 31, 8, '#F4F0E6'); ctx.strokeStyle = COL.taronja; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, top, 31, 8, 0, 0, Math.PI*2); ctx.stroke();
+  const hl = [-20, -80 - 24*liftL], hr = [20, -80 - 24*liftR];
+  ctx.strokeStyle = '#E9D2A6'; ctx.lineWidth = 4.5; ctx.lineCap = 'round';
+  line(hl[0], hl[1], hl[0] + 18 - liftL*6, hl[1] + 16 - liftL*24);
+  line(hr[0], hr[1], hr[0] - 18 + liftR*6, hr[1] + 16 - liftR*24);
+  ctx.fillStyle = COL.taronja; circ(hl[0] + 18 - liftL*6, hl[1] + 16 - liftL*24, 3.5); circ(hr[0] - 18 + liftR*6, hr[1] + 16 - liftR*24, 3.5);
+  return { lh: hl, rh: hr };
+}
+function bassGuitar(sway){
+  const a = -0.06 + sway*0.03, tx = -12, ty = -6;
+  ctx.save(); ctx.translate(tx, ty); ctx.rotate(a);
+  frr(-5, -196, 10, 150, 2, '#2E1B0E');
+  frr(-8, -218, 16, 26, 4, '#3B2414');
+  ctx.fillStyle = '#C9C9D2'; for(let i = 0; i < 3; i++){ circ(-11, -212 + i*8, 2.2); circ(11, -212 + i*8, 2.2); }
+  ctx.fillStyle = '#7A3A10';
+  ctx.beginPath(); ctx.ellipse(0, -28, 33, 32, 0, 0, Math.PI*2); ctx.ellipse(-20, -62, 10, 22, -.25, 0, Math.PI*2); ctx.ellipse(18, -66, 9, 23, .2, 0, Math.PI*2); ctx.fill();
+  const g = ctx.createRadialGradient(0, -30, 4, 0, -30, 40); g.addColorStop(0, '#FFE07A'); g.addColorStop(.6, '#F7A020'); g.addColorStop(1, '#C0560E');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, -28, 30, 29, 0, 0, Math.PI*2); ctx.ellipse(-20, -62, 7.5, 19, -.25, 0, Math.PI*2); ctx.ellipse(18, -66, 6.5, 20, .2, 0, Math.PI*2); ctx.fill();
+  frr(-13, -46, 26, 7, 2, '#141414'); frr(-13, -31, 26, 7, 2, '#141414'); frr(-10, -12, 20, 5, 2, '#141414');
+  ctx.fillStyle = '#C9C9D2'; circ(20, -16, 3); circ(23, -26, 3); circ(24, -36, 3);
+  ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = .8;
+  for(let i = -2.5; i <= 2.5; i++) line(i*1.5, -8, i*1.3, -196);
+  ctx.restore();
+  return { neckHand: rotPt(0, -104, a, tx, ty), bodyHand: rotPt(10, -34, a, tx, ty) };
+}
+const BRASS = '#E8B53A', BRASS_D = '#B8841C', BRASS_L = '#FFE9A0';
+function sax(sw){
+  const a = .12 + sw*.05;
+  ctx.save(); ctx.translate(2, -150); ctx.rotate(a);
+  ctx.strokeStyle = BRASS_D; ctx.lineWidth = 17; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-2, 0); ctx.lineTo(2, 14); ctx.quadraticCurveTo(0, 76, 8, 96); ctx.quadraticCurveTo(22, 116, 36, 92); ctx.stroke();
+  ctx.strokeStyle = BRASS; ctx.lineWidth = 13;
+  ctx.beginPath(); ctx.moveTo(-2, 0); ctx.lineTo(2, 14); ctx.quadraticCurveTo(0, 76, 8, 96); ctx.quadraticCurveTo(22, 116, 36, 92); ctx.stroke();
+  ctx.fillStyle = BRASS; ctx.beginPath(); ctx.moveTo(28, 92); ctx.lineTo(48, 60); ctx.lineTo(60, 70); ctx.lineTo(44, 98); ctx.closePath(); ctx.fill();
+  ell(54, 65, 10, 7, BRASS_D, -.9); ell(54, 65, 7, 4.5, '#5A3A08', -.9);
+  ctx.strokeStyle = BRASS_L; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-3, 20); ctx.quadraticCurveTo(-5, 70, 2, 90); ctx.stroke();
+  ctx.fillStyle = '#FFF4C8'; for(let i = 0; i < 5; i++) circ(-1 + i*.4, 30 + i*11, 3.2);
+  frr(-5, -10, 7, 14, 3, '#231215');
+  ctx.restore();
+  return { up: rotPt(-6, 34, a, 2, -150), low: rotPt(-4, 74, a, 2, -150) };
+}
+function trumpet(lift){
+  const a = -.08 - lift*.12;
+  ctx.save(); ctx.translate(6, -156); ctx.rotate(a);
+  frr(0, -3, 10, 6, 2, '#C0C0C8');
+  frr(8, -7, 58, 9, 4, BRASS); frr(18, 4, 36, 8, 4, BRASS_D);
+  ctx.fillStyle = BRASS; ctx.beginPath(); ctx.moveTo(62, -8); ctx.lineTo(88, -20); ctx.lineTo(88, 12); ctx.lineTo(62, 2); ctx.closePath(); ctx.fill();
+  ell(88, -4, 5, 16, BRASS_D); ell(89, -4, 3, 12, '#5A3A08');
+  ctx.fillStyle = BRASS_L; ctx.fillRect(10, -6, 50, 2);
+  for(const x of [26, 34, 42]){ frr(x, -18, 5, 13, 2, BRASS_D); circ(x + 2.5, -19, 3.5, '#FFF4C8'); }
+  ctx.restore();
+  return { h1: rotPt(30, 2, a, 6, -156), h2: rotPt(48, 8, a, 6, -156) };
+}
+function trombone(slide){
+  ctx.save(); ctx.translate(6, -156);
+  ctx.strokeStyle = BRASS; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  line(0, 0, 70, 0);
+  ctx.fillStyle = BRASS; ctx.beginPath(); ctx.moveTo(64, -4); ctx.lineTo(92, -18); ctx.lineTo(92, 14); ctx.lineTo(64, 4); ctx.closePath(); ctx.fill();
+  ell(92, -2, 5, 16, BRASS_D); ell(93, -2, 3, 12, '#5A3A08');
+  ctx.strokeStyle = BRASS_D; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(14, 0); ctx.quadraticCurveTo(-2, 9, 14, 18); ctx.stroke();
+  const L2 = 46 + slide*34;
+  ctx.strokeStyle = BRASS; ctx.lineWidth = 5; line(14, 18, 14 + L2, 18); line(14, 26, 14 + L2, 26);
+  ctx.beginPath(); ctx.moveTo(14 + L2, 18); ctx.quadraticCurveTo(22 + L2, 22, 14 + L2, 26); ctx.stroke();
+  ctx.fillStyle = BRASS_L; ctx.fillRect(4, -2, 60, 1.6);
+  ctx.restore();
+  return { h1: [26, -150], h2: [6 + 14 + L2 - 12, -134] };
+}
+function micro(){   // micròfon a la mà
+  ctx.save(); ctx.translate(16, -146); ctx.rotate(-.9);
+  frr(-3.5, 0, 7, 26, 3, '#2A2229');
+  circ(0, -2, 7.5, '#B9BCC8'); ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1;
+  for(let i = -1; i <= 1; i++) line(-6, -2 + i*3, 6, -2 + i*3);
+  ctx.restore();
+  return [26, -130];
+}
+
+/* ---- cos d'un cantant (sense braços) ---- */
+function singerBody(sp, beatPh){
+  if(sp.top === 'dress'){
+    // cames, vestit lila de tirants i sabates
+    ctx.strokeStyle = COL.pell; ctx.lineWidth = 12; ctx.lineCap = 'round'; line(-12, -50, -14, -10); line(12, -50, 14, -10);
+    shoes(sp.shoes);
+    ctx.fillStyle = sp.dress; ctx.beginPath(); ctx.moveTo(-26, -108); ctx.lineTo(26, -108); ctx.lineTo(44, -44); ctx.quadraticCurveTo(0, -34, -44, -44); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = sp.dressDark; ctx.beginPath(); ctx.moveTo(-6, -104); ctx.lineTo(4, -104); ctx.lineTo(10, -42); ctx.lineTo(-10, -41); ctx.closePath(); ctx.fill();
+    frr(-28, -142, 56, 40, 12, sp.dress);
+    ctx.fillStyle = COL.pell; ctx.beginPath(); ctx.moveTo(-12, -142); ctx.lineTo(0, -124); ctx.lineTo(12, -142); ctx.closePath(); ctx.fill();
+    circ(-36, -132, 9, COL.pell); circ(36, -132, 9, COL.pell);
+  } else {
+    // jaqueta taronja amb panell verd i caputxa lila; pantalons lila
+    pants(sp.pants); shoes(sp.shoes);
+    ell(0, -142, 30, 10, sp.hood);
+    frr(-34, -142, 68, 66, 14, sp.jacket);
+    ctx.fillStyle = sp.panel; ctx.beginPath(); ctx.moveTo(4, -142); ctx.lineTo(34, -142); ctx.lineTo(34, -96); ctx.lineTo(-34, -90); ctx.lineTo(-34, -104); ctx.closePath(); ctx.fill();
+    frr(-46, -140, 22, 26, 9, sp.jacket); frr(24, -140, 22, 26, 9, sp.panel);
+    ctx.fillStyle = sp.hood; ctx.beginPath(); ctx.moveTo(-16, -146); ctx.lineTo(0, -124); ctx.lineTo(16, -146); ctx.lineTo(10, -150); ctx.lineTo(0, -138); ctx.lineTo(-10, -150); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = sp.hood; ctx.lineWidth = 2.5; line(0, -126, -2, -80);
+    ctx.strokeStyle = sp.strings; ctx.lineWidth = 2.5; line(-8, -134, -10, -104); line(8, -134, 10, -104);
+    frr(-34, -84, 68, 8, 4, sp.hood);
+  }
+}
+function singerHead(sp, o){
+  hair(sp.hair, sp.hairCol, false);
+  head();
+  hair(sp.hair, sp.hairCol, true);
+  face({ eyes:o.eyes, mouth:o.mouth, browCol:sp.brow, lips:sp.lips });
+}
+
+/* ---- qui juga: amb la cistella (o amb el micro quan és amb la banda) ---- */
+function drawPlayer(x, y, h, opts){
+  const sp = SINGERS[PLAYER], beatPh = opts.beatPh;
+  const bob = -Math.abs(Math.sin(beatPh*Math.PI)) * 3;
+  ctx.save(); ctx.translate(x, y - (opts.jump||0)); ctx.scale(h/200, h/200);
+  if(opts.shake) ctx.translate(Math.sin(opts.shake*60)*4*opts.shake, 0);
+  ctx.save(); ctx.translate(0, (opts.jump||0) * 200/h); ell(0, -2, 40, 8, 'rgba(46,15,82,.22)'); ctx.restore();
+  ctx.translate(0, bob);
+  singerBody(sp, beatPh);
+  const sleeve = sp.top === 'dress' ? null : sp.jacket, sleeve2 = sp.top === 'dress' ? null : sp.panel;
+  const mouth = opts.scared ? 'o' : (opts.happy ? 'big' : (opts.withMic ? (beatPh < .5 ? 'big' : 'o') : 'laugh'));
+  singerHead(sp, { eyes: opts.scared ? 'scared' : (opts.happy ? 'laugh' : 'open'), mouth });
+  if(opts.withMic){
+    const hnd = micro();
+    arm(36, -128, hnd[0], hnd[1], 12, sleeve2, sp.warmers);
+    arm(-36, -128, -40 - Math.sin(beatPh*Math.PI*2)*6, -150 - Math.abs(Math.sin(beatPh*Math.PI))*14, -10, sleeve, sp.warmers);
+  } else {
+    basket(opts.count||0);
+    arm(-36, -128, -32, -92, -10, sleeve, sp.warmers);
+    arm(36, -128, 32, -92, 10, sleeve2, sp.warmers);
+  }
+  ctx.restore();
+}
+// l'altre cantant, que canta amb la banda
+function drawOtherSinger(x, y, h, beatPh, jump){
+  const sp = SINGERS[1 - PLAYER];
+  const bob = -Math.abs(Math.sin(beatPh*Math.PI)) * 3;
+  ctx.save(); ctx.translate(x, y - jump); ctx.scale(h/200, h/200);
+  ctx.save(); ctx.translate(0, jump * 200/h); ell(0, -2, 40, 8, 'rgba(46,15,82,.22)'); ctx.restore();
+  ctx.translate(0, bob);
+  singerBody(sp, beatPh);
+  singerHead(sp, { eyes:'laugh', mouth: beatPh < .5 ? 'big' : 'laugh' });
+  const sleeve = sp.top === 'dress' ? null : sp.jacket, sleeve2 = sp.top === 'dress' ? null : sp.panel;
+  const hnd = micro();
+  arm(36, -128, hnd[0], hnd[1], 12, sleeve2, sp.warmers);
+  arm(-36, -128, -44, -112 - Math.abs(Math.sin(beatPh*Math.PI))*30, -10, sleeve, sp.warmers);
+  ctx.restore();
+}
+// un músic de la Melmelada Band
+function drawMusician(key, x, y, h, beatPh, jump){
+  const m = MEL[key];
+  const bob = -Math.abs(Math.sin(beatPh*Math.PI)) * 3;
+  ctx.save(); ctx.translate(x, y - jump); ctx.scale(h/200, h/200);
+  ctx.save(); ctx.translate(0, jump * 200/h); ell(0, -2, 40, 8, 'rgba(46,15,82,.22)'); ctx.restore();
+  pants(m.pants); shoes(m.shoes);
+  ctx.translate(0, bob);
+  hair(m.hair, m.hairCol, false);
+  shirtStars(m.shirt, m.stars);
+  if(m.suspenders){ ctx.strokeStyle = m.suspenders; ctx.lineWidth = 6; line(-18, -140, -16, -80); line(18, -140, 16, -80); }
+  head();
+  if(m.beard) beardShape(m.beardCol);
+  hair(m.hair, m.hairCol, true);
+  if(m.cap) capHat(m.cap);
+  face({ eyes:m.eyes, mouth:m.mouth, browCol:m.hairCol, lips:m.lips });
+  const sw = Math.sin(beatPh*Math.PI*2);
+  if(m.inst === 'drum'){
+    const leftBeat = ((Math.floor(G.lastBeatIdx || 0) % 2) + 2) % 2 === 0;
+    const up = Math.min(1, beatPh*2.2), down = 1 - beatPh;
+    const p = drum(leftBeat ? up : down, leftBeat ? down : up);
+    arm(-36, -124, p.lh[0], p.lh[1], -12, m.shirt); arm(36, -124, p.rh[0], p.rh[1], 12, m.shirt);
+  } else if(m.inst === 'bass'){
+    const p = bassGuitar(sw);
+    arm(-36, -124, p.neckHand[0] - 4, p.neckHand[1], -14, m.shirt); arm(36, -124, 34, -78, 10, m.shirt);
+  } else if(m.inst === 'sax'){
+    const p = sax(sw);
+    arm(-36, -124, p.up[0], p.up[1], -12, m.shirt); arm(36, -124, p.low[0], p.low[1], 14, m.shirt);
+  } else if(m.inst === 'trumpet'){
+    const p = trumpet(Math.abs(Math.sin(beatPh*Math.PI)));
+    arm(-36, -124, p.h1[0], p.h1[1], -10, m.shirt); arm(36, -124, p.h2[0], p.h2[1], 10, m.shirt);
+  } else if(m.inst === 'trombone'){
+    const p = trombone((Math.sin(beatPh*Math.PI*2) + 1) / 2);
+    arm(-36, -124, p.h1[0], p.h1[1], -10, m.shirt); arm(36, -124, p.h2[0], p.h2[1], 12, m.shirt);
+  }
+  ctx.restore();
+}
+// retrat per triar cantant a la pantalla d'inici
+function drawSingerPortrait(cnv, who){
+  const r = cnv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cnv.width = Math.round((r.width || 120) * dpr); cnv.height = Math.round((r.height || 150) * dpr);
+  const c2d = cnv.getContext('2d'); ctx = c2d;
+  try {
+    const w = cnv.width / dpr, hh = cnv.height / dpr, sc = hh / 225;
+    c2d.setTransform(dpr * sc, 0, 0, dpr * sc, w / 2 * dpr, (hh - 4) * dpr);
+    const keep = PLAYER; PLAYER = who;
+    const sp = SINGERS[who];
+    singerBody(sp, .25); singerHead(sp, { eyes:'open', mouth:'laugh' });
+    const sleeve = sp.top === 'dress' ? null : sp.jacket, sleeve2 = sp.top === 'dress' ? null : sp.panel;
+    basket(3);
+    arm(-36, -128, -32, -92, -10, sleeve, sp.warmers); arm(36, -128, 32, -92, 10, sleeve2, sp.warmers);
+    PLAYER = keep;
+  } finally { ctx = mainCtx; }
+}
+
+
+/* =====================================================================
+   EL TIÓ D'EL POT PETIT (coordenades pròpies, origen al centre de la cara)
+   Tronc turquesa fosc amb vetes, cara rosada de front, barretina coral amb
+   vora de punts i la punta que fa ganxo, potes vermelloses i estrelles màgiques.
+   ===================================================================== */
+const TIO_REAR = [200, 52];     // per on surten els objectes (el cul del Tió)
+const TIO_CX   = 92;            // centre horitzontal del conjunt
+const TIO_TOP  = -162, TIO_BOT = 112;
+const TQ = { cos:'#0E5560', fosc:'#0A4650', veta:'#2C8A92', vora:'#0F5E68', cara:'#F6AE94', galta:'#E3887E', nas:'#2A7F88', nasCap:'#4BAAB2',
+             barr:'#EE5E5C', barrClar:'#F47A78', barrFosc:'#D24C50', punts:'#F59A9A', pota:'#C9474B', potaFosc:'#A33A3E', estrella:'#14A3A8' };
+
+function beatPhase(t){ const bi = (t - BEAT0) / BEAT; return { bi, ph: ((bi % 1) + 1) % 1 }; }
+
+function tioLeg(x1, y1, x2, y2){
+  ctx.save(); ctx.lineCap = 'round';
+  ctx.strokeStyle = TQ.pota; ctx.lineWidth = 20; line(x1, y1, x2, y2);
+  ctx.strokeStyle = TQ.potaFosc; ctx.lineWidth = 1.8;
+  line(x1 - 3, y1 + 4, x2 - 4, y2 - 2); line(x1 + 4, y1 + 8, x2 + 3, y2 - 6);
+  ctx.restore();
+}
+function tioBodyPath(){
+  ctx.beginPath(); ctx.moveTo(0, -75); ctx.lineTo(190, -32); ctx.ellipse(190, 22, 14, 54, 0, -Math.PI/2, Math.PI/2); ctx.lineTo(0, 78); ctx.closePath();
+}
+function drawTioPP(rt, squash, talk){
+  ctx.save();
+  // bot al ritme: s'aixafa una mica i aixeca el cul
+  ctx.translate(80, 104); ctx.scale(1 + .04*squash, 1 - .07*squash); ctx.rotate(-.03*squash); ctx.translate(-80, -104);
+  ell(80, 106, 150, 8, 'rgba(46,15,82,.28)');
+  // potes curtes i gruixudes
+  tioLeg(118, 76, 121, 98); tioLeg(162, 72, 166, 96);
+  tioLeg(-12, 70, -16, 100); tioLeg(46, 74, 50, 100);
+  // tronc
+  tioBodyPath(); ctx.fillStyle = TQ.cos; ctx.fill();
+  ctx.save(); tioBodyPath(); ctx.clip();
+  ctx.fillStyle = TQ.fosc; ctx.beginPath(); ctx.moveTo(0, 52); ctx.lineTo(210, 50); ctx.lineTo(210, 100); ctx.lineTo(0, 100); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.beginPath(); ctx.moveTo(0, -75); ctx.lineTo(190, -32); ctx.lineTo(190, -18); ctx.lineTo(0, -56); ctx.fill();
+  ctx.strokeStyle = TQ.veta; ctx.lineWidth = 2;
+  for(const [cx, cy, rx, ry] of [[96, 2, 28, 16], [96, 2, 17, 9], [96, 2, 7, 3], [152, 30, 20, 12], [152, 30, 10, 5], [66, 44, 18, 9]]){ ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, -.1, 0, Math.PI*2); ctx.stroke(); }
+  for(const [x1, y, x2] of [[44, -46, 140], [34, -24, 74], [128, -10, 186], [46, 22, 122], [72, 62, 180], [124, 48, 176]]){ ctx.beginPath(); ctx.moveTo(x1, y); ctx.bezierCurveTo(x1 + 20, y - 5, x2 - 20, y + 6, x2, y + 2); ctx.stroke(); }
+  ctx.restore();
+  ell(190, 22, 12, 52, TQ.fosc);
+  // cara (tall del tronc, una mica de tres quarts)
+  ell(0, 2, 50, 84, TQ.vora);
+  ell(5, 2, 42, 77, TQ.cara);
+  // celles, ulls tancats i galtes
+  ctx.fillStyle = TQ.vora;
+  ctx.save(); ctx.translate(-14, -58); ctx.rotate(-.2); rr(-9, -4, 18, 8, 4); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(22, -58); ctx.rotate(.14); rr(-9, -4, 18, 8, 4); ctx.fill(); ctx.restore();
+  ctx.strokeStyle = '#1C3E44'; ctx.lineWidth = 4.8; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(-15, -32, 10, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
+  ctx.beginPath(); ctx.arc(22, -32, 10, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
+  ctx.fillStyle = TQ.galta; ctx.globalAlpha = .72; ell(-26, 12, 13, 19); ell(36, 12, 15, 20); ctx.globalAlpha = 1;
+  // nas: un con turquesa que apunta endavant (cap a l'esquerra)
+  ctx.save(); ctx.translate(4, -6); ctx.rotate(.25);
+  ctx.fillStyle = TQ.nas; ctx.beginPath(); ctx.moveTo(-34, -10); ctx.lineTo(10, -14); ctx.quadraticCurveTo(18, 0, 10, 14); ctx.lineTo(-34, 10); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.moveTo(-34, 3); ctx.lineTo(10, 4); ctx.quadraticCurveTo(16, 8, 10, 14); ctx.lineTo(-34, 10); ctx.closePath(); ctx.fill();
+  ell(-34, 0, 7, 10.5, TQ.nasCap);
+  ctx.restore();
+  // boca: somriure (s'obre una mica quan "canta")
+  const mo = 3 + 5 * talk;
+  ctx.fillStyle = '#1F1418'; ctx.beginPath(); ctx.moveTo(-16, 30); ctx.quadraticCurveTo(0, 42 + mo, 16, 28); ctx.quadraticCurveTo(0, 34 + mo*.3, -16, 30); ctx.fill();
+  // barretina: vora de punts que embolica el cap + cúpula tirada enrere + punta amb ganxo
+  const brim = () => { ctx.beginPath(); ctx.moveTo(-48, -40); ctx.bezierCurveTo(-36, -76, 40, -84, 122, -36); ctx.lineTo(128, -68);
+    ctx.bezierCurveTo(70, -106, 0, -118, -46, -80); ctx.closePath(); };
+  ctx.fillStyle = TQ.barr;
+  ctx.beginPath(); ctx.moveTo(-46, -80); ctx.bezierCurveTo(-48, -128, -6, -162, 46, -158);
+  ctx.bezierCurveTo(92, -155, 122, -134, 124, -104); ctx.quadraticCurveTo(126, -84, 128, -68);
+  ctx.bezierCurveTo(70, -106, 0, -118, -46, -80); ctx.closePath(); ctx.fill();
+  // la punta que cau i fa ganxo (com al dibuix d'El Pot Petit)
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const hook = () => { ctx.beginPath(); ctx.moveTo(92, -140); ctx.bezierCurveTo(130, -136, 156, -118, 154, -96); ctx.quadraticCurveTo(152, -80, 140, -80); ctx.quadraticCurveTo(130, -81, 131, -92); };
+  ctx.strokeStyle = TQ.barr; ctx.lineWidth = 24; hook(); ctx.stroke();
+  ctx.strokeStyle = TQ.barrFosc; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(120, -112); ctx.quadraticCurveTo(142, -104, 142, -92); ctx.stroke();
+  ctx.fillStyle = 'rgba(160,40,45,.22)'; ctx.beginPath(); ctx.moveTo(70, -152); ctx.bezierCurveTo(100, -146, 122, -130, 124, -104); ctx.quadraticCurveTo(110, -112, 96, -112); ctx.bezierCurveTo(90, -126, 82, -142, 70, -152); ctx.fill();
+  ctx.fillStyle = TQ.barrClar; ctx.globalAlpha = .75; ell(4, -132, 14, 22, null, -.7); ctx.globalAlpha = 1;
+  ctx.save(); brim(); ctx.fillStyle = TQ.barrFosc; ctx.fill(); ctx.clip();
+  ctx.fillStyle = TQ.punts; for(let y = -120; y < -28; y += 7) for(let x = -56 + (Math.round(y/7) % 2 ? 3.5 : 0); x < 132; x += 7) circ(x, y, 1.5);
+  ctx.restore();
+  ctx.restore();
+}
+// estrelles màgiques turquesa (decoració suau al voltant del cul)
+function tioSparkles(rt, k){
+  ctx.save(); ctx.fillStyle = TQ.estrella;
+  const pts = [[222, -6, 9], [246, 30, 7], [214, 44, 5], [262, -16, 6], [236, 70, 6]];
+  pts.forEach(([x, y, r], i) => {
+    const tw = .55 + .45 * Math.sin(rt * 3 + i * 1.7);
+    ctx.globalAlpha = (.35 + .65 * k) * tw;
+    if(i % 2) circ(x, y, r * .55); else star(ctx, x, y, r * (1 + .3*k), r * .45);
+  });
+  ctx.restore();
+}
+function drawTio(t, rt, mode){
+  // mode 'play': bota al ritme de la cançó (del temps HIT_FROM fins al final) · 'demo': bota al ritme sense cançó
+  const src = mode === 'demo' ? rt : t;
+  const { bi, ph } = beatPhase(src);
+  const active = mode === 'demo' || (mode === 'play' && bi >= HIT_FROM && bi < END_BEAT - 1);
+  const squash = active ? Math.max(0, 1 - ph / .22) : 0;
+  const talk = active ? Math.abs(Math.sin(ph * Math.PI)) : .2 + .2 * Math.sin(rt * 2);
+  ctx.save(); ctx.translate(L.tioX, L.tioY); ctx.scale(L.tioSc, L.tioSc);
+  tioSparkles(rt, squash);
+  drawTioPP(rt, squash, talk);
+  ctx.restore();
+}
+
+/* =====================================================================
+   OBJECTES (unitats: ~60 d'ample)
+   ===================================================================== */
+function drawItem(type, x, y, sc, rot, t, ci){
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc);
+  switch(type){
+    case 'torro': {
+      const xix = (ci||0) % 2 === 1;   // torró de Xixona (tou) o d'Alacant (dur, amb ametlles)
+      const front = xix ? '#C99555' : '#F3DDB0', top = xix ? '#DDB077' : '#FFF6DE', side = xix ? '#A87A40' : '#E2C48C';
+      ctx.fillStyle = top; ctx.beginPath(); ctx.moveTo(-28,-12); ctx.lineTo(18,-12); ctx.lineTo(30,-22); ctx.lineTo(-16,-22); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = side; ctx.beginPath(); ctx.moveTo(18,-12); ctx.lineTo(30,-22); ctx.lineTo(30,6); ctx.lineTo(18,16); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = front; ctx.fillRect(-28,-12,46,28);
+      ctx.strokeStyle = 'rgba(110,60,15,.4)'; ctx.lineWidth = 1.6; ctx.strokeRect(-28,-12,46,28);
+      if(!xix){
+        ctx.fillStyle = '#E3A24E';
+        for(const [ax, ay, r] of [[-18,-2,.3],[-4,6,-.4],[10,-4,.6],[-12,10,1.1],[6,10,.1],[-2,-17,.2],[14,-18,-.3],[-12,-18,.5]]){ ctx.beginPath(); ctx.ellipse(ax, ay, 5.5, 3.4, r, 0, Math.PI*2); ctx.fill(); }
+        ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-26,-10,4,24);
+      } else {
+        ctx.fillStyle = 'rgba(110,60,15,.35)';
+        for(const [ax, ay] of [[-20,-4],[-8,6],[6,-2],[12,8],[-14,10],[0,-8]]) circ(ax, ay, 1.8);
+        ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(-26,-10,4,24);
+      }
+      break;
+    }
+    case 'regal': {
+      const [c, rib] = GIFT_COL[(ci||0) % GIFT_COL.length];
+      frr(-23,-12,46,36,4,c);
+      ctx.fillStyle = 'rgba(0,0,0,.15)'; ctx.fillRect(10,-12,13,36);
+      frr(-26,-21,52,13,3,c);
+      ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(-25,-20,50,3);
+      ctx.fillStyle = rib; ctx.fillRect(-4,-21,8,45); ctx.fillRect(-23,4,46,6);
+      ctx.save(); ctx.translate(0,-22);
+      ctx.fillStyle = rib;
+      ctx.beginPath(); ctx.ellipse(-10,-6,10,6,-.5,0,Math.PI*2); ctx.ellipse(10,-6,10,6,.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(-10,-6,4,2.4,-.5,0,Math.PI*2); ctx.ellipse(10,-6,4,2.4,.5,0,Math.PI*2); ctx.fill();
+      circ(0,-2,5,rib);
+      ctx.restore();
+      break;
+    }
+    case 'caganer': {
+      // la caca (petita i simpàtica)
+      ctx.fillStyle = '#6B3E1E'; ell(16,24,10,4.5); ell(16,19,7,3.8); ell(16,14.5,4.2,2.8);
+      ctx.fillStyle = 'rgba(255,255,255,.35)'; circ(14,18,1.4);
+      // cames ajupides
+      ctx.strokeStyle = '#3B2A20'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+      line(6,8,-12,8); line(-12,8,-13,20);
+      ell(-17,23,9,4.5,'#1A1410');
+      // camisa blanca, armilla negra i faixa vermella
+      frr(-13,-16,20,26,7,'#F7F3EC');
+      ctx.fillStyle = '#1E1E24'; frr(-13,-12,7,20,3); frr(1,-12,6,20,3);
+      ctx.fillStyle = COL.vermell; ctx.fillRect(-13,3,20,6);
+      // braç amb la mà al genoll
+      ctx.strokeStyle = '#F7F3EC'; ctx.lineWidth = 7; line(-6,-9,-15,2); circ(-16,4,3.6,COL.pell);
+      // cap
+      circ(-3,-27,11,COL.pell);
+      circ(-8,-28,1.8,COL.tinta);
+      ctx.strokeStyle = '#7A1F2B'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(-8,-23,3.2,.25,Math.PI-.25); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,110,110,.38)'; circ(-1,-23,2.8);
+      // barretina
+      ctx.fillStyle = COL.vermell; ctx.beginPath(); ctx.moveTo(-14,-32); ctx.quadraticCurveTo(-12,-50,4,-48); ctx.quadraticCurveTo(18,-46,20,-32);
+      ctx.quadraticCurveTo(15,-27,13,-34); ctx.quadraticCurveTo(9,-38,7,-32); ctx.closePath(); ctx.fill();
+      frr(-15,-35,23,5,2,COL.negre);
+      break;
+    }
+    case 'arengada': {
+      ctx.strokeStyle = 'rgba(120,200,70,.85)'; ctx.lineWidth = 3;
+      for(let k=-1;k<=1;k++){ ctx.beginPath(); for(let j=0;j<6;j++){ const yy = -20 - j*4; const xx = k*11 + Math.sin(j*1.4 + t*8 + k)*3; j ? ctx.lineTo(xx,yy) : ctx.moveTo(xx,yy); } ctx.stroke(); }
+      ctx.fillStyle = '#7F8EA3'; ctx.beginPath(); ctx.moveTo(22,0); ctx.lineTo(38,-12); ctx.quadraticCurveTo(33,0,38,12); ctx.closePath(); ctx.fill();
+      const g = ctx.createLinearGradient(0,-13,0,13); g.addColorStop(0,'#5E6E86'); g.addColorStop(.5,'#9DAABB'); g.addColorStop(1,'#DCE2EA');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-32,0); ctx.quadraticCurveTo(-18,-15,8,-12); ctx.quadraticCurveTo(22,-8,25,0); ctx.quadraticCurveTo(22,8,8,12); ctx.quadraticCurveTo(-18,15,-32,0); ctx.fill();
+      ctx.fillStyle = '#6F7F96'; ctx.beginPath(); ctx.moveTo(-4,-12); ctx.lineTo(8,-19); ctx.lineTo(12,-11); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0,11); ctx.lineTo(8,17); ctx.lineTo(10,10); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.2;
+      for(let k=0;k<4;k++){ ctx.beginPath(); ctx.arc(-6 + k*7, 0, 5, -1.1, 1.1); ctx.stroke(); }
+      circ(-21,-3,4.4,'#fff'); circ(-21,-3,2.3,COL.tinta);
+      ctx.strokeStyle = '#4A5568'; ctx.lineWidth = 1.8; line(-32,1,-26,3);
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+/* =====================================================================
+   ÀUDIO
+   ===================================================================== */
+const audio = { ctx:null, buf:null, src:null, gain:null, startAt:0, ready:false, el:null, dur:192.9, elLast:-1, elPerf:0 };
+async function loadAudio(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  try { audio.ctx = new AC(); } catch(e){ audio.ctx = null; }
+  try {
+    if(!audio.ctx) throw new Error('no ctx');
+    const r = await fetch(SONG_URL);
+    if(!r.ok) throw new Error('http ' + r.status);
+    const ab = await r.arrayBuffer();
+    audio.buf = await new Promise((res, rej) => { const p = audio.ctx.decodeAudioData(ab, res, rej); if(p && p.then) p.then(res, rej); });
+    audio.dur = audio.buf.duration;
+    audio.ready = true; onAudioReady();
+  } catch(e){
+    // pla B: element <audio> (p. ex. obert des de fitxer local)
+    const el = new Audio(); el.preload = 'auto'; el.src = SONG_URL;
+    audio.el = el;
+    let done = false;
+    const ok = () => { if(done) return; done = true; audio.dur = el.duration || audio.dur; audio.ready = true; onAudioReady(); };
+    el.addEventListener('canplaythrough', ok, {once:true});
+    el.addEventListener('loadedmetadata', () => setTimeout(ok, 400), {once:true});
+    el.addEventListener('error', () => { const d = document.getElementById('loadErr'); d.hidden = false; d.textContent = 'No s\'ha pogut carregar la cançó.'; });
+    el.load();
+  }
+}
+function startSong(){
+  if(audio.ctx && audio.ctx.state !== 'running') audio.ctx.resume();
+  if(audio.buf){
+    if(audio.src){ try{ audio.src.onended = null; audio.src.stop(); }catch(e){} }
+    if(!audio.gain){ audio.gain = audio.ctx.createGain(); audio.gain.connect(audio.ctx.destination); }
+    const s = audio.ctx.createBufferSource(); s.buffer = audio.buf; s.connect(audio.gain);
+    audio.startAt = audio.ctx.currentTime + 0.15; s.start(audio.startAt);
+    audio.src = s;
+  } else if(audio.el){
+    audio.el.currentTime = 0; const p = audio.el.play(); if(p && p.catch) p.catch(()=>{});
+  }
+}
+function songTime(){
+  if(TEST) return TEST.time();
+  if(audio.buf && audio.src){
+    const lat = audio.ctx.outputLatency || audio.ctx.baseLatency || 0;
+    return audio.ctx.currentTime - audio.startAt - lat;
+  }
+  if(audio.el){
+    const ct = audio.el.currentTime, now = performance.now()/1000;
+    if(ct !== audio.elLast){ audio.elLast = ct; audio.elPerf = now; }
+    return audio.el.paused ? ct : ct + Math.min(.25, now - audio.elPerf);
+  }
+  return 0;
+}
+function pauseSong(){ if(TEST){ TEST.pause(); return; } if(audio.buf && audio.ctx) audio.ctx.suspend(); else if(audio.el) audio.el.pause(); }
+function resumeSong(){ if(TEST){ TEST.resume(); return; } if(audio.buf && audio.ctx) audio.ctx.resume(); else if(audio.el){ const p = audio.el.play(); if(p && p.catch) p.catch(()=>{}); } }
+
+/* ---- la cistella, amb regals i torrons a dins ---- */
+function basket(n){
+  ctx.strokeStyle = '#8A4E1E'; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(-26,-92); ctx.quadraticCurveTo(0,-128,26,-92); ctx.stroke();
+  const R = mulberry(5);
+  const k = Math.min(n, 9);
+  for(let i=0;i<k;i++){
+    const x = -20 + R()*40, y = -98 - R()*8 - (i>5?6:0), r = (R()-.5)*.6;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(r);
+    if(i % 3 === 1){ frr(-7,-5,14,10,2,'#F3DDB0'); ctx.fillStyle = '#E3A24E'; circ(-2,0,1.8); circ(3,-1,1.8); }
+    else { const [c, rib] = GIFT_COL[i % GIFT_COL.length]; frr(-7,-7,14,14,2,c); ctx.fillStyle = rib; ctx.fillRect(-1.5,-7,3,14); ctx.fillRect(-7,-1.5,14,3); }
+    ctx.restore();
+  }
+  ctx.fillStyle = '#B86E2E';
+  ctx.beginPath(); ctx.moveTo(-34,-94); ctx.lineTo(34,-94); ctx.lineTo(25,-58); ctx.lineTo(-25,-58); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#8A4E1E'; ctx.lineWidth = 2;
+  for(let i=1;i<4;i++){ const y = -94 + i*9; const w = 34 - i*2.25; line(-w,y,w,y); }
+  for(let i=-3;i<=3;i++){ line(i*9.5,-94,i*7,-58); }
+  frr(-36,-98,72,8,4,'#D58A44');
+}
+
+/* =====================================================================
+   ÀUDIO: efectes (en re major, com la cançó)
+   ===================================================================== */
+function sfx(kind){
+  const ac = audio.ctx; if(!ac || ac.state !== 'running') return;
+  const t = ac.currentTime + .005;
+  const out = ac.createGain(); out.connect(ac.destination);
+  const tone = (f0, f1, start, dur, type, vol) => {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, start); if(f1) o.frequency.exponentialRampToValueAtTime(f1, start + dur*.7);
+    g.gain.setValueAtTime(.0001, start); g.gain.exponentialRampToValueAtTime(vol, start + .012); g.gain.exponentialRampToValueAtTime(.0001, start + dur);
+    o.connect(g); g.connect(out); o.start(start); o.stop(start + dur + .02);
+  };
+  if(kind === 'catch'){ tone(880, 0, t, .09, 'triangle', .12); tone(1174.66, 0, t + .06, .16, 'triangle', .12); }
+  if(kind === 'bad'){ tone(330, 110, t, .32, 'square', .05); }
+  if(kind === 'verse'){ [587.33, 739.99, 880, 1174.66].forEach((f, i) => tone(f, 0, t + i*.09, i === 3 ? .34 : .15, 'triangle', .11)); }
+}
+
+/* =====================================================================
+   JOC
+   ===================================================================== */
+const G = { state:'title', items:[], score:0, best:0, caught:0, goodBeats:0, hits:0, particles:[], popups:[],
+  signPop:-9, signShake:-9, bandJumpT:-9, endShown:false, verses:0, verseT:-99, verseK:-1,
+  usedBand:false, usedSwitch:false, badHints:0, switchHints:0, hintUntil:-1, hintKind:null, hintLane:0, flakes:[] };
+const pl = {   // qui juga (un dels dos cantants)
+  lane:1, fromX:0, fromY:0, fromH:0, moveT:-9, scaredT:-9, catchT:-9, lastLane:1 };
+
+/* Calendari d'objectes (temps on ATERREN), seguint l'estructura de la cançó:
+   secció A tranquil·la (un objecte cada 2 temps) · tornades amb patrons de 16 temps
+   · onades d'arengades a les aturades de la música · pluja de regals al final. */
+function buildSchedule(seed){
+  const R = mulberry(seed);
+  const out = [];
+  const add = (beat, lane, type, all) => out.push({ beat, lane, type, all: !!all });
+  const other = (a, b) => [0,1,2].filter(l => l !== a && l !== b)[Math.floor(R() * (b === undefined ? 2 : 1))];
+  const wave = beat => { for(let l=0;l<3;l++) add(beat, l, 'arengada', true); };
+  const rnd3 = () => Math.floor(R()*3);
+  // secció A (temps 36-86): un regal cada 2 temps, canviant de carril cada 4 regals
+  let A = 1, n = 0;
+  for(let b = 36; b <= 86; b += 2){
+    if(n && n % 4 === 0) A = other(A);
+    add(b, A, n % 8 < 4 ? 'regal' : 'torro'); n++;
+    if(b >= 52 && n % 3 === 0) add(b + 1, other(A), 'arengada');            // arengades a un altre carril (de mostra)
+    if(b === 66 || b === 78) add(b + 1, A, 'arengada');                    // i alguna al teu carril: cal moure's!
+  }
+  // pujada (89-99): un parell de caganers
+  add(92, 1, 'caganer'); add(96, other(1), 'caganer');
+  // patró de 16 temps per a les tornades
+  const pat16 = (B, v) => {
+    A = other(A);
+    for(let r=0;r<4;r++) add(B + r, A, 'regal');
+    let Bl = other(A);
+    if(v % 2){ add(B + 4, Bl, 'torro'); add(B + 5, Bl, 'torro'); const C = other(Bl); add(B + 6, Bl, 'arengada'); add(B + 6, C, 'torro'); add(B + 7, C, 'torro'); Bl = C; }
+    else { for(let r=4;r<8;r++) add(B + r, Bl, 'torro'); }
+    wave(B + 8);
+    { const g = rnd3(); [0,1,2].forEach(l => add(B + 10, l, l === g ? 'torro' : 'arengada')); }
+    let T = rnd3();
+    for(let r=12;r<16;r++) add(B + r, T, 'regal');
+    add(B + (v % 2 ? 13 : 15), other(T), 'caganer');
+    A = T;
+  };
+  pat16(100, 0); pat16(116, 1); add(132, A, 'regal'); add(133, A, 'regal');
+  wave(136);                                                                 // la música s'atura: tothom a la banda!
+  pat16(138, 2); pat16(154, 3);
+  { let T = other(A); for(let b = 170; b <= 177; b++){ if(b === 174) T = other(T); add(b, T, 'torro'); } add(172, other(T), 'caganer'); A = T; }
+  // baixada (178-183): caganers, i l'arengada cau on eres
+  [[178, 0], [180, 2], [182, 1]].forEach(([b, l]) => { add(b, l, 'caganer'); add(b + 1, l, 'arengada'); });
+  pat16(184, 4); pat16(200, 5); add(216, A, 'regal');
+  wave(220);                                                                 // segona aturada
+  pat16(222, 6); pat16(238, 7); pat16(254, 8);
+  // final: pluja de regals per tots tres carrils
+  for(let b = 270; b <= LAST_LAND; b++) for(let l=0;l<3;l++) add(b, l, 'regal');
+  return out.map(s => ({ ...s, good: GOOD.includes(s.type), landT: bt(s.beat), spawnT: bt(s.beat - FALL_BEATS),
+    state:'wait', rot0: (R()-.5)*.5, spin: (R()-.5)*2.4, ci: Math.floor(R()*8), fate:null, doneRt:0, arc: 14 + R()*16 }));
+}
+
+function resetGame(){
+  G.items = buildSchedule((Math.random()*1e9)|0);
+  G.goodBeats = new Set(G.items.filter(it => it.good).map(it => it.beat)).size;
+  G.score = 0; G.best = 0; G.caught = 0; G.hits = 0; G.particles = []; G.popups = [];
+  G.signPop = -9; G.signShake = -9; G.bandJumpT = -9; G.endShown = false;
+  G.verses = 0; G.verseT = -99; G.verseK = -1;
+  G.badHints = 0; G.switchHints = 0; G.hintUntil = -1; G.hintKind = null;
+  pl.lane = 1; pl.lastLane = 1; pl.moveT = -9; pl.scaredT = -9; pl.catchT = -9;
+}
+
+/* ---- moviment ---- */
+let rtNow = 0;
+function playerPos(){
+  if(pl.lane < 0) return { x: slotX(homeSlot()), y: L.feetY, h: L.musH };
+  return { x: laneX(pl.lane), y: L.stationY, h: L.plH };
+}
+let playerDrawn = { x:0, y:0, h:0 };
+function movePlayer(lane){
+  if(lane === pl.lane) return;
+  if(G.state !== 'playing') return;
+  pl.fromX = playerDrawn.x; pl.fromY = playerDrawn.y; pl.fromH = playerDrawn.h;
+  pl.moveT = rtNow;
+  if(lane < 0){ G.usedBand = true; } else { G.usedSwitch = true; pl.lastLane = lane; }
+  pl.lane = lane;
+}
+
+/* ---- entrada ---- */
+const bandTapY = () => L.stationY + 34;
+function toUnits(ev){ const r = cv.getBoundingClientRect(); return { x: (ev.clientX - r.left) / S, y: (ev.clientY - r.top) / S }; }
+cv.addEventListener('pointerdown', ev => {
+  if(G.state !== 'playing') return;
+  ev.preventDefault();
+  const p = toUnits(ev);
+  if(p.y >= bandTapY()){ movePlayer(-1); return; }
+  if(p.y < L.laneTop - 40) return;
+  let best = -1, bd = 1e9;
+  for(let i=0;i<3;i++){ const d = Math.abs(p.x - laneX(i)); if(d < bd){ bd = d; best = i; } }
+  if(best >= 0 && bd < L.laneSp/2 + 40) movePlayer(best);
+});
+window.addEventListener('keydown', ev => {
+  if(G.state !== 'playing') return;
+  if(ev.key === 'ArrowLeft'){ movePlayer(pl.lane < 0 ? pl.lastLane : Math.max(0, pl.lane - 1)); }
+  else if(ev.key === 'ArrowRight'){ movePlayer(pl.lane < 0 ? pl.lastLane : Math.min(2, pl.lane + 1)); }
+  else if(ev.key === 'ArrowDown' || ev.key === ' '){ movePlayer(-1); ev.preventDefault(); }
+  else if(ev.key === 'ArrowUp'){ movePlayer(pl.lastLane); }
+  else if(/^[1-3]$/.test(ev.key)){ movePlayer(+ev.key - 1); }
+});
+
+/* ---- efectes ---- */
+function burst(x, y, kind, n){
+  n = n || (kind === 'stars' ? 10 : 9);
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2, v = (kind === 'spark' ? 60 : 120) + Math.random()*(kind === 'spark' ? 90 : 160);
+    G.particles.push({ x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - (kind === 'spark' ? 40 : 120), life: 0, max: (kind === 'spark' ? .45 : .7) + Math.random()*.3, kind,
+      col: kind === 'puff' ? 'rgba(150,200,90,.8)' : (kind === 'spark' ? ['#14A3A8', '#14A3A8', '#7FD9DC', '#FFFFFF'][i%4] : [COL.groc, COL.taronja, '#fff', COL.verd][i%4]), r: kind === 'puff' ? 10 + Math.random()*10 : (kind === 'spark' ? 3 + Math.random()*3 : 5 + Math.random()*4) });
+  }
+}
+function popup(x, y, text, col, size){ G.popups.push({ x, y, text, col: col || COL.groc, t0: rtNow, size: size || 40 }); }
+
+/* ---- versos tradicionals: un de nou cada VERSE_STEP regals ---- */
+function checkVerses(){
+  while(G.verses < TRAD.length && G.best >= VERSE_STEP * (G.verses + 1)){
+    G.verseK = G.verses; G.verses++; G.verseT = rtNow; G.bandJumpT = rtNow;
+    setTimeout(() => sfx('verse'), 140);
+    popup(LW/2, L.laneTop + 70, (VERSE_STEP * G.verses) + '!', COL.groc, 90);
+    gcEvent('vers-' + G.verses);
+  }
+}
+
+/* ---- resolució d'un objecte ---- */
+function resolve(it){
+  it.state = 'done'; it.doneRt = rtNow;
+  const x = laneX(it.lane), y = catchY();
+  if(pl.lane === it.lane){
+    if(it.good){
+      G.score++; G.caught++; G.best = Math.max(G.best, G.score); G.signPop = rtNow; pl.catchT = rtNow; it.fate = 'caught';
+      burst(x, y, 'stars'); popup(x, y - 30, '+1'); sfx('catch');
+      checkVerses();
+    } else {
+      G.hits++; it.fate = 'hit'; pl.scaredT = rtNow; G.signShake = rtNow; sfx('bad');
+      burst(x, y, 'puff'); popup(x, y - 40, 'Quina pudor!', '#C9F08A', 32);
+      if(G.score > 0){ G.score--; popup(L.sign.x + L.sign.w/2, L.sign.y + L.sign.h + 26, '-1', '#FF8FA8', 40); }
+    }
+  } else {
+    it.fate = 'miss';
+  }
+  if(it.all && it.lane === 0){ G.bandJumpT = rtNow; if(pl.lane < 0) popup(slotX(homeSlot()), L.feetY - L.musH - 30, 'Fem un bot!', COL.groc, 38); }
+}
+
+/* ---- pistes per als més petits ---- */
+function setHint(kind, until, lane){ G.hintKind = kind; G.hintUntil = until; G.hintLane = lane||0; }
+
+/* ---- actualització ---- */
+function update(t, dt){
+  if(G.state === 'playing'){
+    for(const it of G.items){
+      if(it.state === 'wait' && t >= it.spawnT){
+        it.state = 'fall';
+        if(it.lane === 1 || !it.all){ const [px, py] = tioPt(TIO_REAR[0], TIO_REAR[1]); burst(px, py, 'spark', 7); }
+        if(t > bt(60)){
+          if(it.all && it.lane === 0 && G.badHints < 2 && !(G.hintUntil > t)){ G.badHints++; setHint('wave', it.landT); }
+          else if(!it.good && !it.all && it.lane === pl.lane && G.badHints < 3 && !(G.hintUntil > t)){ G.badHints++; setHint('dodge', it.landT); }
+        }
+        if(it.good && !G.usedSwitch && G.switchHints < 2 && it.lane !== pl.lane && t > bt(33) && !(G.hintUntil > t)
+           && !G.items.some(o => o !== it && o.beat === it.beat && o.good && o.lane === pl.lane)){ G.switchHints++; setHint('switch', it.landT, it.lane); }
+      }
+      if(it.state === 'fall' && t >= it.landT) resolve(it);
+    }
+    if(G.hintKind === 'switch' && pl.lane === G.hintLane) G.hintUntil = -1;
+    if((G.hintKind === 'dodge' || G.hintKind === 'wave') && pl.lane < 0) G.hintUntil = -1;
+    if(TEST && TEST.auto) autopilot(t);
+    if(t >= bt(LAST_LAND + 1) && pl.lane >= 0) movePlayer(-1);
+    if(t >= bt(END_BEAT) && !G.endShown){ G.endShown = true; showEnd(); }
+  }
+  for(const p of G.particles){ p.life += dt; p.x += p.vx*dt; p.y += p.vy*dt; p.vy += (p.kind === 'spark' ? 160 : 420)*dt; p.vx *= .98; }
+  G.particles = G.particles.filter(p => p.life < p.max);
+  G.popups = G.popups.filter(p => rtNow - p.t0 < 1);
+}
+function autopilot(t){
+  const soon = G.items.filter(it => it.state === 'fall' && it.landT - t < .45);
+  if(!soon.length) return;
+  const beat = Math.min(...soon.map(it => it.beat));
+  const group = soon.filter(it => it.beat === beat);
+  const good = group.find(it => it.good);
+  if(good){ if(pl.lane !== good.lane) movePlayer(good.lane); }
+  else if(group.some(it => it.lane === pl.lane)) movePlayer(-1);
+}
+
+/* ---- què diu la píndola de text: la lletra (quan el client l'enviï) ---- */
+function lyricAt(t){
+  const b = (t - BEAT0) / BEAT + .35;   // apareix una mica abans que es canti
+  for(const [b0, b1, text] of LYRIC_LINES) if(b >= b0 && b < b1) return { text };
+  return null;
+}
+
+
+/* =====================================================================
+   DIBUIX
+   ===================================================================== */
+const POP_K = .22;   // fracció del temps de caiguda que l'objecte vola des del cul del Tió fins al seu carril
+function itemPos(it, t){
+  const k = clamp((t - it.spawnT) / (it.landT - it.spawnT), 0, 1);
+  const tx = laneX(it.lane), cy = catchY();
+  if(k < POP_K){
+    const u = k / POP_K;
+    const [sx, sy] = tioPt(TIO_REAR[0], TIO_REAR[1]);
+    // surt pel cul del Tió (sota la manta) i llisca en diagonal fins a dalt del seu carril
+    return { x: lerp(sx, tx, u), y: lerp(sy, L.laneTop, u) - Math.sin(u*Math.PI) * it.arc, sc: L.itemSc * (.45 + .55*u), k };
+  }
+  const u = (k - POP_K) / (1 - POP_K);
+  return { x: tx, y: L.laneTop + (cy - L.laneTop) * (u*u*.55 + u*.45), sc: L.itemSc, k };
+}
+
+function drawLanes(){
+  const w = L.laneW;
+  for(let i=0;i<3;i++){
+    const x = laneX(i), top = L.laneTop - 6, bot = L.stationY;
+    const g = ctx.createLinearGradient(0, top, 0, bot);
+    g.addColorStop(0, 'rgba(40,15,0,.10)'); g.addColorStop(1, 'rgba(255,210,63,.12)');
+    ctx.fillStyle = g; rr(x - w*.45, top, w*.9, bot - top, 18); ctx.fill();
+    ctx.setLineDash([10,9]); ctx.strokeStyle = 'rgba(255,248,235,.62)'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+function drawStations(){
+  for(let i=0;i<3;i++){
+    const x = laneX(i), y = L.stationY + 6;
+    const rx = Math.min(L.laneW*.42, 64), ry = rx*.3;
+    const active = pl.lane === i;
+    if(active){ const gg = ctx.createRadialGradient(x,y,4,x,y,rx*1.6); gg.addColorStop(0,'rgba(255,210,63,.55)'); gg.addColorStop(1,'rgba(255,210,63,0)'); ctx.fillStyle = gg; ctx.fillRect(x-rx*2,y-rx,rx*4,rx*2); }
+    ell(x, y + 12, rx, ry, COL.taronjaFosc);
+    ctx.fillStyle = COL.taronjaFosc; ctx.fillRect(x - rx, y, rx*2, 12);
+    ell(x, y, rx, ry, active ? COL.groc : COL.taronja);
+    ctx.strokeStyle = COL.lilaFosc; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+    ell(x, y, rx*.55, ry*.55, active ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.18)');
+  }
+}
+function drawItems(t){
+  const cy = catchY();
+  for(const it of G.items){
+    if(it.state === 'wait') continue;
+    const x = laneX(it.lane);
+    if(it.state === 'fall'){
+      const p = itemPos(it, t);
+      if(p.k >= POP_K){
+        const kk = (p.k - POP_K) / (1 - POP_K);
+        ctx.globalAlpha = .15 + kk*.35; ell(x, L.stationY + 6, 12 + kk*22, 4 + kk*6, it.good ? 'rgba(255,240,150,.9)' : 'rgba(40,70,20,.9)'); ctx.globalAlpha = 1;
+      }
+      drawItem(it.type, p.x, p.y, p.sc, it.rot0 + it.spin * p.k, t, it.ci);
+    } else {
+      const age = rtNow - it.doneRt, sc = L.itemSc;
+      if(it.fate === 'caught' || age > .55) continue;
+      if(it.fate === 'hit'){ const a = 1 - age/.4; if(a <= 0) continue; ctx.globalAlpha = a; drawItem(it.type, x + age*120, cy - age*160, sc*(1+age), age*8, t, it.ci); ctx.globalAlpha = 1; continue; }
+      const k = clamp(age / .18, 0, 1);
+      const y = cy + (L.stationY - cy) * k;
+      const alpha = age < .18 ? 1 : 1 - (age - .18) / .37;
+      ctx.globalAlpha = clamp(alpha, 0, 1);
+      drawItem(it.type, x, y, sc * (age < .18 ? 1 : 1 + (age-.18)*.8), it.rot0 + it.spin, t, it.ci);
+      if(age > .18 && age < .5){ ctx.fillStyle = it.good ? 'rgba(255,255,255,.5)' : 'rgba(150,210,90,.5)'; for(let j=0;j<5;j++){ const a = j*1.256; circ(x + Math.cos(a)*(age-.18)*120, L.stationY - 6 + Math.sin(a)*(age-.18)*40, 4); } }
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+function drawBand(beatPh){
+  const jumpAge = rtNow - G.bandJumpT;
+  const jump = jumpAge < .5 ? Math.sin(jumpAge/.5*Math.PI) * 38 : 0;
+  const gx = slotX(homeSlot()), gy = L.feetY - L.musH*.5;
+  const gg = ctx.createRadialGradient(gx, gy, 10, gx, gy, L.musH*.75);
+  gg.addColorStop(0, pl.lane < 0 ? 'rgba(255,210,63,.40)' : 'rgba(255,210,63,.16)'); gg.addColorStop(1, 'rgba(255,210,63,0)');
+  ctx.fillStyle = gg; ctx.fillRect(gx - L.musH, gy - L.musH, L.musH*2, L.musH*2);
+  ell(gx, L.feetY - 2, L.slotW*.36, 9, pl.lane < 0 ? 'rgba(255,210,63,.55)' : 'rgba(255,210,63,.25)');
+  L.band.forEach((key, i) => {
+    if(key === 'HOME') return;
+    const j = jump * (i % 2 ? 1 : .85);
+    if(key === 'OTHER') drawOtherSinger(slotX(i), L.feetY, L.musH, beatPh, j);
+    else drawMusician(key, slotX(i), L.feetY, L.musH, beatPh, j);
+  });
+  return jump;
+}
+function drawPlayerNow(beatPh, bandJump){
+  const target = playerPos();
+  const k = clamp((rtNow - pl.moveT) / .26, 0, 1);
+  let x = target.x, y = target.y, h = target.h, hop = 0;
+  if(k < 1){
+    const e = easeInOut(k);
+    x = lerp(pl.fromX, target.x, e); y = lerp(pl.fromY, target.y, e); h = lerp(pl.fromH, target.h, e);
+    hop = Math.sin(k*Math.PI) * 60;
+  }
+  playerDrawn = { x, y, h };
+  const scared = rtNow - pl.scaredT < .6;
+  const happy = rtNow - pl.catchT < .35;
+  const jump = hop + (scared ? Math.sin((rtNow - pl.scaredT)/.6*Math.PI)*45 : 0) + (pl.lane < 0 && k >= 1 ? bandJump : 0) + (happy ? Math.sin((rtNow-pl.catchT)/.35*Math.PI)*10 : 0);
+  const withMic = pl.lane < 0 ? k > .5 : k < .5 && pl.fromY > L.floorTop;
+  drawPlayer(x, y, h, { beatPh, jump, scared, happy, withMic, count: G.score, shake: scared ? 1 - (rtNow - pl.scaredT)/.6 : 0 });
+}
+function drawSign(){
+  const s = L.sign;
+  const pop = clamp(1 - (rtNow - G.signPop)/.35, 0, 1);
+  const sh = clamp(1 - (rtNow - G.signShake)/.5, 0, 1);
+  ctx.save();
+  ctx.translate(s.x + s.w/2 + Math.sin(rtNow*70)*8*sh, s.y + s.h/2);
+  ctx.scale(1 + .14*easeOut(pop), 1 + .14*easeOut(pop));
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; rr(-s.w/2 + 4, -s.h/2 + 8, s.w, s.h, 22); ctx.fill();
+  ctx.fillStyle = COL.lilaFosc; rr(-s.w/2 - 6, -s.h/2 - 6, s.w + 12, s.h + 12, 24); ctx.fill();
+  const g = ctx.createLinearGradient(0, -s.h/2, 0, s.h/2); g.addColorStop(0, '#FF9A3D'); g.addColorStop(1, COL.taronja);
+  ctx.fillStyle = g; rr(-s.w/2, -s.h/2, s.w, s.h, 18); ctx.fill();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const lab = s.h * .15;
+  ctx.font = font(lab); ctx.fillStyle = COL.lilaFosc;
+  ctx.fillText('REGALS', 10, -s.h/2 + lab*1.05);
+  drawItem('regal', -ctx.measureText('REGALS').width/2 - 12 + 8, -s.h/2 + lab*1.15, lab/44, 0, rtNow, 1);
+  const ten = G.score > 0 && G.score % 10 === 0 && rtNow - G.signPop < 1.2;
+  ctx.font = font(s.h * .54);
+  ctx.lineWidth = 8; ctx.strokeStyle = COL.lilaFosc; ctx.lineJoin = 'round';
+  ctx.strokeText(String(G.score), 0, s.h*.05);
+  ctx.fillStyle = sh > 0 ? '#C9F08A' : (ten ? '#FFFFFF' : COL.groc);
+  ctx.fillText(String(G.score), 0, s.h*.05);
+  let fs = s.h * .14; ctx.font = font(fs, 700);
+  const word = G.score ? regalsTxt(G.score) : 'cap regal';
+  const mw = ctx.measureText(word).width; if(mw > s.w - 20){ fs *= (s.w - 20)/mw; ctx.font = font(fs, 700); }
+  ctx.fillStyle = '#FFF5E6'; ctx.fillText(word, 0, s.h/2 - fs*1.05);
+  ctx.restore();
+}
+
+/* ---- la píndola de text sota el Tió: vers desbloquejat > pista > lletra ---- */
+const VERSE_SHOW = 4.5;
+function splitTwo(txt){
+  const mid = txt.length / 2; let best = -1, bd = 1e9;
+  for(let i=0;i<txt.length;i++) if(txt[i] === ' '){ const d = Math.abs(i - mid) - (txt[i-1] === ',' ? 6 : 0); if(d < bd){ bd = d; best = i; } }
+  return best < 0 ? [txt] : [txt.slice(0, best), txt.slice(best + 1)];
+}
+function pillContent(t){
+  if(G.state !== 'playing' && G.state !== 'paused') return null;
+  if(rtNow - G.verseT < VERSE_SHOW && G.verseK >= 0) return { kind:'verse', text: TRAD[G.verseK], tag: '🔓 Vers del Tió ' + (G.verseK + 1) + ' de ' + TRAD.length, age: rtNow - G.verseT };
+  if(G.hintUntil > t){
+    if(G.hintKind === 'switch') return { kind:'hint', text:'Toca una estació per canviar de carril!', hand:[laneX(G.hintLane), L.stationY + 14] };
+    if(G.hintKind === 'dodge')  return { kind:'hint', text:'Arengada pudent! Canvia de carril o toca la banda!', hand:[slotX(homeSlot()), L.feetY - L.musH*.55] };
+    if(G.hintKind === 'wave')   return { kind:'hint', text:'Arengades a tot arreu! Toca la banda!', hand:[slotX(homeSlot()), L.feetY - L.musH*.55] };
+  }
+  if(t < bt(32.4)){
+    if(t < bt(10)) return { kind:'lyric', text:'Tió de Nadal · El Pot Petit' };
+    const idx = Math.floor((t - bt(10)) / 3.4) % 3;
+    if(idx === 0) return { kind:'hint', text:'Recull els regals amb la cistella!' };
+    if(idx === 1){
+      const nx = G.items.find(it => it.good && it.state !== 'done' && it.landT > t);
+      return { kind:'hint', text:'Toca una estació per canviar de carril!', hand:[laneX(nx ? nx.lane : 0), L.stationY + 14] };
+    }
+    return { kind:'hint', text:'Arengada pudent? Toca la banda!', hand:[slotX(homeSlot()), L.feetY - L.musH*.55] };
+  }
+  const ly = lyricAt(t);
+  if(ly) return { kind:'lyric', text: ly.text, k: ly.k };
+  return null;
+}
+function drawPill(c){
+  if(!c) return;
+  const verse = c.kind === 'verse';
+  let fs = verse ? (L.portrait ? 28 : 34) : (L.portrait ? 26 : 32);
+  if(c.kind === 'lyric') fs += L.portrait ? 2 : 4;
+  ctx.save();
+  ctx.font = font(fs);
+  const maxW = LW - 24, pad = fs * 1.1;
+  let lines = [c.text];
+  let tw = ctx.measureText(c.text).width;
+  if((tw + pad*2) * .82 > maxW){ lines = splitTwo(c.text); tw = Math.max(...lines.map(s => ctx.measureText(s).width)); }
+  const fit = Math.min(1, maxW / (tw + pad*2));
+  let sc = fit;
+  if(verse){ const a = c.age; sc *= a < .3 ? .6 + .4*easeOut(a/.3) + Math.sin(a/.3*Math.PI)*.08 : 1; ctx.globalAlpha = a > VERSE_SHOW - .4 ? clamp((VERSE_SHOW - a)/.4, 0, 1) : 1; }
+  const lh = fs * 1.12, h = fs * .62 + lh * lines.length, w = tw + pad*2;
+  ctx.translate(LW/2, L.pillY + (lines.length > 1 && !L.portrait ? 8 : 0)); ctx.scale(sc, sc);
+  if(verse){
+    ctx.fillStyle = '#5A0E0E'; rr(-w/2 - 6, -h/2 - 6, w + 12, h + 12, 22); ctx.fill();
+    ctx.fillStyle = COL.vermell; rr(-w/2, -h/2, w, h, 18); ctx.fill();
+    ctx.strokeStyle = COL.groc; ctx.lineWidth = 3; rr(-w/2 + 5, -h/2 + 5, w - 10, h - 10, 14); ctx.stroke();
+    // etiqueta
+    ctx.font = font(fs*.55); const tg = ctx.measureText(c.tag).width + fs*.9;
+    ctx.fillStyle = COL.groc; rr(-tg/2, -h/2 - fs*.62, tg, fs*.82, fs*.41); ctx.fill();
+    ctx.fillStyle = '#5A0E0E'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(c.tag, 0, -h/2 - fs*.2);
+    ctx.font = font(fs); ctx.fillStyle = '#FFFFFF';
+  } else if(c.kind === 'lyric'){
+    ctx.fillStyle = 'rgba(36,9,63,.86)'; rr(-w/2, -h/2, w, h, Math.min(h/2, 30)); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,210,63,.6)'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = COL.groc;
+    ctx.font = font(fs*.7); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('♪', -w/2 + pad*.5, 0); ctx.fillText('♪', w/2 - pad*.5, 0);
+    ctx.font = font(fs);
+  } else {
+    ctx.fillStyle = 'rgba(36,9,63,.78)'; rr(-w/2, -h/2, w, h, Math.min(h/2, 30)); ctx.fill();
+    ctx.fillStyle = COL.groc;
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  lines.forEach((s, i) => ctx.fillText(s, 0, (i - (lines.length - 1)/2) * lh + fs*.06));
+  ctx.restore();
+}
+function drawHand(x, y){
+  const b = Math.sin(rtNow*8)*8;
+  ctx.save(); ctx.translate(x, y + b);
+  ctx.font = '54px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText('👆', 0, 0);
+  ctx.restore();
+}
+function drawParticles(){
+  for(const p of G.particles){
+    const a = 1 - p.life/p.max;
+    ctx.globalAlpha = a;
+    if(p.kind === 'puff'){ circ(p.x, p.y, p.r*(1 + p.life*1.5), p.col); }
+    else { ctx.fillStyle = p.col; star(ctx, p.x, p.y, p.r, p.r*.45); }
+  }
+  ctx.globalAlpha = 1;
+  for(const p of G.popups){
+    const age = rtNow - p.t0;
+    ctx.globalAlpha = clamp(1 - age, 0, 1);
+    ctx.font = font(p.size); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 7; ctx.strokeStyle = COL.lilaFosc; ctx.lineJoin = 'round';
+    const y = p.y - age*60;
+    ctx.strokeText(p.text, p.x, y); ctx.fillStyle = p.col; ctx.fillText(p.text, p.x, y);
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ---- ambient: estrelles de les garlandes que espurnegen ---- */
+function drawAmbient(dt){
+  if(!G.flakes.length){ const R = mulberry(77); for(let i = 0; i < 26; i++) G.flakes.push({ x: R(), y: .05 + R() * .55, p: R() * 6, c: STAR_COLS[i % 4] }); }
+  for(const f of G.flakes){
+    const x = f.x * LW;
+    if(Math.abs(x - L.cx) < L.laneSp * 1.6) continue;
+    const a = Math.max(0, Math.sin(rtNow * 2.2 + f.p));
+    ctx.globalAlpha = a * .9; ctx.fillStyle = '#FFF6D8'; star(ctx, x, f.y * L.wallBottom, 3 + a*5, 1.2 + a*1.6);
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ---- bucle principal ---- */
+let lastRt = 0;
+function frame(ms){
+  rtNow = ms / 1000;
+  const dt = Math.min(.05, Math.max(0, rtNow - lastRt)); lastRt = rtNow;
+  const playing = G.state === 'playing' || G.state === 'paused' || G.state === 'end';
+  const t = playing ? songTime() : 0;
+  update(t, dt);
+  const beatPh = playing ? (((t - BEAT0) / BEAT) % 1 + 1) % 1 : (rtNow / BEAT) % 1;
+  G.lastBeatIdx = playing ? (t - BEAT0) / BEAT : rtNow / BEAT;
+  ctx.setTransform(1,0,0,1,0,0);
+  if(bgCanvas) ctx.drawImage(bgCanvas, 0, 0);
+  ctx.setTransform(S*DPR, 0, 0, S*DPR, 0, 0);
+  drawAmbient(dt);
+  drawLanes();
+  drawStations();
+  drawTio(t, rtNow, playing ? 'play' : 'demo');
+  const pc = pillContent(t);
+  drawItems(t);
+  drawPill(pc);   // la lletra per sobre dels objectes que surten del Tió, perquè es pugui llegir
+  const bj = drawBand(beatPh);
+  drawPlayerNow(beatPh, bj);
+  drawParticles();
+  drawSign();
+  if(pc && pc.hand && G.state === 'playing') drawHand(pc.hand[0], pc.hand[1]);
+  requestAnimationFrame(frame);
+}
+
+
+/* =====================================================================
+   INTERFÍCIE
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const titleOv = $('titleOv'), endOv = $('endOv'), pauseOv = $('pauseOv');
+const playBtn = $('playBtn'), pauseBtn = $('pauseBtn');
+
+function onAudioReady(){ playBtn.disabled = false; playBtn.textContent = '▶ Juga!'; }
+/* ---- estadístiques (GoatCounter: tiopotpetit.goatcounter.com) ---- */
+function gcEvent(name){
+  if(TEST) return;
+  try { if(window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'tio-pot-petit/' + name, title: name, event: true }); } catch(e){}
+}
+// partides jugades des que s'ha obert la pàgina (només en memòria: no es guarda res al dispositiu).
+// Cada partida envia el seu número (partida-1, partida-2…): partida-1 = gent que ha jugat,
+// la suma de tots els partida-N = partides totals.
+let partidesJugades = 0;
+function startGame(){
+  gcEvent('partida-iniciada');
+  gcEvent('cantant-' + (PLAYER ? 'ella' : 'ell'));
+  partidesJugades++;
+  gcEvent('partida-' + partidesJugades);
+  resetGame();
+  titleOv.classList.add('hidden'); endOv.classList.add('hidden'); pauseOv.classList.add('hidden');
+  G.state = 'playing'; pauseBtn.classList.add('show');
+  if(TEST){ TEST.base = 0; TEST.p0 = performance.now()/1000; } else startSong();
+}
+function pauseGame(){ if(G.state !== 'playing') return; G.state = 'paused'; pauseSong(); pauseOv.classList.remove('hidden'); }
+function resumeGame(){ if(G.state !== 'paused') return; G.state = 'playing'; resumeSong(); pauseOv.classList.add('hidden'); }
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function showEnd(){
+  if(pl.lane >= 0){ pl.fromX = playerDrawn.x; pl.fromY = playerDrawn.y; pl.fromH = playerDrawn.h; pl.moveT = rtNow; pl.lane = -1; }
+  G.state = 'end'; pauseBtn.classList.remove('show');
+  gcEvent('partida-acabada');
+  const ratio = G.goodBeats ? G.caught / G.goodBeats : 0;
+  const stars = ratio >= .7 ? 3 : ratio >= .4 ? 2 : 1;
+  $('endTitle').textContent = stars === 3 ? 'Fantàstic!' : stars === 2 ? 'Molt bé!' : 'Bona feina!';
+  $('stars').innerHTML = [0,1,2].map(i => `<span class="${i < stars ? 'on' : 'off'}">★</span>`).join('');
+  $('endNum').textContent = G.score;
+  $('endWord').textContent = G.score ? regalsTxt(G.score) : 'cap regal… torna-hi!';
+  $('vCount').textContent = G.verses;
+  $('verseList').innerHTML = TRAD.map((v, i) => i < G.verses
+    ? `<div class="verse"><span class="ic">📜</span><span>«${esc(v)}»</span></div>`
+    : `<div class="verse locked"><span class="ic">🔒</span><span>Vers ${i + 1}: arriba a ${VERSE_STEP * (i + 1)} regals per descobrir-lo</span></div>`).join('');
+  endOv.classList.remove('hidden');
+  endOv.scrollTop = 0;
+}
+playBtn.addEventListener('click', () => { if(audio.ready) startGame(); });
+// tria del cantant que recull els regals
+function drawWho(){
+  document.querySelectorAll('.who').forEach(b => { drawSingerPortrait(b.querySelector('canvas'), +b.dataset.who); b.classList.toggle('on', +b.dataset.who === PLAYER); });
+}
+document.querySelectorAll('.who').forEach(b => b.addEventListener('click', () => { PLAYER = +b.dataset.who; drawWho(); }));
+$('vStep').textContent = VERSE_STEP;
+$('ytLink').addEventListener('click', () => gcEvent('clic-youtube'));
+pauseBtn.addEventListener('click', pauseGame);
+$('resumeBtn').addEventListener('click', resumeGame);
+$('restartBtn2').addEventListener('click', startGame);
+$('againBtn').addEventListener('click', startGame);
+document.addEventListener('visibilitychange', () => { if(document.hidden) pauseGame(); });
+window.addEventListener('keydown', ev => { if(ev.key === 'Escape' || ev.key === 'p'){ G.state === 'playing' ? pauseGame() : resumeGame(); } });
+
+function drawTitleIcons(){
+  document.querySelectorAll('canvas[data-item]').forEach((c, i) => {
+    c.width = 112; c.height = 112;
+    const cc = c.getContext('2d');
+    ctx = cc;
+    try { cc.setTransform(2,0,0,2,0,0); cc.clearRect(0,0,56,56); drawItem(c.dataset.item, 28, 30, .72, 0, 0, i); } finally { ctx = mainCtx; }
+  });
+}
+
+/* ---- mode de prova (només amb ?test a l'adreça) ---- */
+const QS = new URLSearchParams(location.search);
+const TEST = QS.has('test') ? (() => {
+  const o = { base: parseFloat(QS.get('t') || '0'), speed: parseFloat(QS.get('speed') || '1'), freeze: QS.has('freeze'),
+    auto: QS.has('auto'), p0: performance.now()/1000, paused: false, pausedAt: 0 };
+  o.time = () => o.freeze ? o.base : (o.paused ? o.pausedAt : o.base + (performance.now()/1000 - o.p0) * o.speed);
+  o.pause = () => { o.pausedAt = o.time(); o.paused = true; };
+  o.resume = () => { o.base = o.pausedAt; o.p0 = performance.now()/1000; o.paused = false; };
+  return o;
+})() : null;
+if(QS.has('who')) PLAYER = +QS.get('who');
+
+window.addEventListener('resize', resize);
+resize();
+drawTitleIcons(); drawWho();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { buildBackground(); drawTitleIcons(); drawWho(); });
+if(TEST){
+  if(!QS.has('title')){
+    const base = TEST.base;
+    startGame(); TEST.base = base; TEST.p0 = performance.now()/1000;
+    // en saltar a un moment de la cançó, els objectes que ja havien d'haver caigut no compten
+    for(const it of G.items) if(it.landT < base){ it.state = 'done'; it.fate = 'miss'; it.doneRt = -9; }
+    if(QS.has('lane')) pl.lane = +QS.get('lane');
+    if(QS.has('score')){ G.score = G.best = +QS.get('score'); G.verses = Math.min(TRAD.length, Math.floor(G.best / VERSE_STEP)); }
+    if(QS.has('verses')){ G.verses = +QS.get('verses'); G.verseK = G.verses - 1; G.verseT = performance.now()/1000 - +(QS.get('vage') || .8); }
+    if(QS.has('hint')){ setHint(QS.get('hint'), 1e9, +(QS.get('hlane') || 0)); }
+    if(QS.has('end')){ G.caught = Math.max(G.score, 1); showEnd(); }
+  } else { onAudioReady(); }
+} else {
+  loadAudio();
+}
+requestAnimationFrame(frame);
+
+</script>
+<script data-goatcounter="https://tiopotpetit.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
